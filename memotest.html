@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memotest - Juegos para Dislexia</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/menu-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --background-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+            --success: #48bb78;
+            --warning: #ecc94b;
+            --danger: #f56565;
+        }
+
+        body.dark-mode {
+            --primary-color: #63b3ed;
+            --secondary-color: #90cdf4;
+            --background-color: #1a202c;
+            --card-bg: #2d3748;
+            --text-color: #e2e8f0;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .game-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .game-title {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2.5rem;
+            flex-grow: 1;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .game-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .game-title {
+                font-size: 2rem;
+                order: -1;
+            }
+            
+            .btn-back {
+                align-self: flex-start;
+            }
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mode-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+            overflow: hidden;
+        }
+        
+        .mode-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .mode-card.active {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mode-card.active::after {
+            transform: scaleX(1);
+        }
+        
+        .mode-card .checkmark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .mode-card.active .checkmark {
+            opacity: 1;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .mode-desc {
+            color: var(--text-color);
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: var(--primary-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .card-content {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .card-front {
+            background: var(--primary-color);
+            color: white;
+            transform: rotateY(0deg);
+        }
+
+        .card-back {
+            background: white;
+            transform: rotateY(180deg);
+            color: var(--text-color);
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .card.flipped .card-front {
+            transform: rotateY(180deg);
+        }
+
+        .card.flipped .card-back {
+            transform: rotateY(0deg);
+        }
+
+        .card.matched {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s 0.3s, opacity 0.3s linear;
+        }
+
+        .game-controls {
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .btn-back {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-back:hover {
+            background: var(--surface-elevated);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-back i {
+            transition: transform 0.2s ease;
+        }
+        
+        .btn-back:hover i {
+            transform: translateX(-3px);
+        }
+        
+        .controls-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-start {
+            background: var(--success);
+        }
+
+        .btn-reset {
+            background: var(--danger);
+        }
+
+        .score-display {
+            font-size: 1.25rem;
+            margin: 1rem 0;
+            color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .game-modes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="toggle-container-fixed">
+        <div class="colorblind-selector">
+            <select id="colorblindMode" aria-label="Modo para daltónicos">
+                <option value="normal">Original</option>
+                <option value="protanopia">Protanopia</option>
+                <option value="deuteranopia">Deuteranopia</option>
+                <option value="tritanopia">Tritanopia</option>
+            </select>
+        </div>
+        <button id="darkModeToggle" class="theme-toggle" aria-label="Cambiar modo claro/oscuro">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="game-container">
+        <div class="game-header">
+            <a href="juegos.html" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i>
+                <span>Volver al menú</span>
+            </a>
+            <h1 class="game-title">Memotest Multisensorial</h1>
+        </div>
+        
+        <div class="game-controls">
+            <div class="controls-right">
+                <button id="startBtn" class="btn btn-start">Comenzar Juego</button>
+                <button id="resetBtn" class="btn btn-reset" disabled>Reiniciar</button>
+                <div class="score-display" style="display: none;">Parejas encontradas: <span id="score">0</span>/<span id="total-pairs">0</span></div>
+            </div>
+        </div>
+
+        <div class="game-modes">
+            <div class="mode-card" data-mode="image-image">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="mode-icon">🖼️</div>
+                <h3 class="mode-title">Imagen con Imagen</h3>
+                <p class="mode-desc">Encuentra las parejas de imágenes iguales. Ejemplo: 🐱 ↔ 🐱</p>
+                <small>Desarrolla memoria visual y atención.</small>
+            </div>
+            
+            <div class="mode-card" data-mode="image-word">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="mode-icon">📝</div>
+                <h3 class="mode-title">Imagen con Palabra</h3>
+                <p class="mode-desc">Relaciona la imagen con su palabra correspondiente. Ejemplo: 🐶 ↔ "perro"</p>
+                <small>Refuerza vocabulario y lectura.</small>
+            </div>
+            
+            <div class="mode-card" data-mode="sound-image">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="mode-icon">🔊</div>
+                <h3 class="mode-title">Sonido con Imagen</h3>
+                <p class="mode-desc">Relaciona el sonido con la imagen correcta. Ejemplo: 🔊 "miau" ↔ 🐱</p>
+                <small>Estimula memoria auditiva y asociación.</small>
+            </div>
+            
+            <div class="mode-card" data-mode="syllables">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="mode-icon">🔤</div>
+                <h3 class="mode-title">Sílabas</h3>
+                <p class="mode-desc">Une las sílabas para formar palabras. Ejemplo: "CA" + "SA" → 🏠 CASA</p>
+                <small>Mejora conciencia fonológica.</small>
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard">
+            <!-- Las cartas se generarán dinámicamente con JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Variables del juego
+        let cards = [];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let matchedPairs = 0;
+        let currentMode = '';
+        let sounds = {};
+
+        // Elementos del DOM
+        const gameBoard = document.getElementById('gameBoard');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const scoreDisplay = document.getElementById('score');
+        const modeCards = document.querySelectorAll('.mode-card');
+
+        // Datos para los diferentes modos de juego
+        const gameData = {
+            'image-image': {
+                pairs: 8,
+                items: [
+                    { id: 1, content: '🐱', type: 'emoji' },
+                    { id: 2, content: '🐶', type: 'emoji' },
+                    { id: 3, content: '🐭', type: 'emoji' },
+                    { id: 4, content: '🐰', type: 'emoji' },
+                    { id: 5, content: '🦊', type: 'emoji' },
+                    { id: 6, content: '🐻', type: 'emoji' },
+                    { id: 7, content: '🐼', type: 'emoji' },
+                    { id: 8, content: '🦁', type: 'emoji' }
+                ]
+            },
+            'image-word': {
+                pairs: 8,
+                items: [
+                    { id: 1, content: '🐱', match: 'gato', type: 'emoji' },
+                    { id: 2, content: '🐶', match: 'perro', type: 'emoji' },
+                    { id: 3, content: '🐭', match: 'ratón', type: 'emoji' },
+                    { id: 4, content: '🐰', match: 'conejo', type: 'emoji' },
+                    { id: 5, content: '🦊', match: 'zorro', type: 'emoji' },
+                    { id: 6, content: '🐻', match: 'oso', type: 'emoji' },
+                    { id: 7, content: '🐼', match: 'panda', type: 'emoji' },
+                    { id: 8, content: '🦁', match: 'león', type: 'emoji' }
+                ]
+            },
+            'sound-image': {
+                pairs: 4, // Menos pares para hacerlo manejable
+                items: [
+                    { id: 1, content: '🐱', sound: 'miau', type: 'emoji' },
+                    { id: 2, content: '🐶', sound: 'guau', type: 'emoji' },
+                    { id: 3, content: '🐮', sound: 'muu', type: 'emoji' },
+                    { id: 4, content: '🦁', sound: 'grrr', type: 'emoji' }
+                ]
+            },
+            'syllables': {
+                pairs: 6,
+                items: [
+                    { id: 1, content: 'CA', match: 'SA', word: 'CASA', type: 'text' },
+                    { id: 2, content: 'ME', match: 'SA', word: 'MESA', type: 'text' },
+                    { id: 3, content: 'PE', match: 'LO', word: 'PELO', type: 'text' },
+                    { id: 4, content: 'SO', match: 'PA', word: 'SOPA', type: 'text' },
+                    { id: 5, content: 'LU', match: 'NA', word: 'LUNA', type: 'text' },
+                    { id: 6, content: 'PA', match: 'TO', word: 'PATO', type: 'text' }
+                ]
+            }
+        };
+
+        // Animación de pulso para la selección
+        const pulseKeyframes = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.03); }
+                100% { transform: scale(1); }
+            }
+        `;
+        
+        // Agregar estilos de animación
+        const styleElement = document.createElement('style');
+        styleElement.textContent = pulseKeyframes;
+        document.head.appendChild(styleElement);
+        
+        // Inicialización del juego
+        function initGame() {
+            // Cargar sonidos
+            loadSounds();
+            
+            // Cargar último modo seleccionado si existe
+            const lastMode = localStorage.getItem('lastSelectedMode');
+            if (lastMode) {
+                const lastModeElement = document.querySelector(`.mode-card[data-mode="${lastMode}"]`);
+                if (lastModeElement) {
+                    lastModeElement.click(); // Simular clic en el último modo seleccionado
+                }
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            resetBtn.addEventListener('click', resetGame);
+            
+            // Selección de modo de juego
+            modeCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // Si ya está activo, no hacer nada
+                    if (card.classList.contains('active')) return;
+                    
+                    // Remover clase activa de todas las tarjetas
+                    modeCards.forEach(c => c.classList.remove('active'));
+                    
+                    // Agregar clase activa a la tarjeta seleccionada
+                    card.classList.add('active');
+                    
+                    // Agregar clase de animación
+                    card.style.animation = 'pulse 0.5s';
+                    
+                    // Remover la animación después de que termine
+                    setTimeout(() => {
+                        card.style.animation = '';
+                    }, 500);
+                    
+                    // Habilitar botón de inicio
+                    startBtn.disabled = false;
+                    currentMode = card.dataset.mode;
+                    
+                    // Guardar la selección en el almacenamiento local
+                    localStorage.setItem('lastSelectedMode', currentMode);
+                });
+            });
+
+            // Configuración del modo oscuro
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+            
+            // Verificar preferencias del sistema
+            if (prefersDarkScheme.matches) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // Alternar modo oscuro
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                darkModeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+
+            // Configuración de accesibilidad para daltonismo
+            const colorblindMode = document.getElementById('colorblindMode');
+            colorblindMode.addEventListener('change', (e) => {
+                document.body.className = ''; // Limpiar clases anteriores
+                if (e.target.value !== 'normal') {
+                    document.body.classList.add(e.target.value);
+                }
+                document.body.classList.toggle('dark-mode', document.body.classList.contains('dark-mode'));
+            });
+        }
+
+        // Cargar sonidos
+        function loadSounds() {
+            // Sonidos para el modo de sonido
+            sounds = {
+                'miau': new Audio('https://assets.mixkit.co/active_storage/sfx/1713/1713-preview.mp3'),
+                'guau': new Audio('https://assets.mixkit.co/active_storage/sfx/1030/1030-preview.mp3'),
+                'muu': new Audio('https://assets.mixkit.co/active_storage/sfx/2139/2139-preview.mp3'),
+                'grrr': new Audio('https://assets.mixkit.co/active_storage/sfx/1773/1773-preview.mp3')
+            };
+        }
+
+        // Iniciar juego
+        function startGame() {
+            if (!currentMode) return;
+            
+            // Reiniciar variables del juego
+            resetGame();
+            
+            // Ocultar selección de modos
+            document.querySelector('.game-modes').style.display = 'none';
+            
+            // Mostrar tablero de juego
+            gameBoard.style.display = 'grid';
+            
+            // Crear mazo de cartas
+            createBoard();
+            
+            // Mostrar contador de puntuación
+            document.querySelector('.score-display').style.display = 'block';
+            document.getElementById('total-pairs').textContent = gameData[currentMode].pairs;
+            
+            // Deshabilitar botón de inicio y habilitar reinicio
+            startBtn.disabled = true;
+            resetBtn.disabled = false;
+        }
+
+        // Crear tablero de juego
+        function createBoard() {
+            gameBoard.innerHTML = '';
+            const modeData = gameData[currentMode];
+            
+            // Duplicar y mezclar las cartas
+            let gameCards = [];
+            
+            if (currentMode === 'image-image' || currentMode === 'syllables') {
+                // Para estos modos, cada ítem se convierte en un par de cartas iguales
+                modeData.items.slice(0, modeData.pairs).forEach(item => {
+                    gameCards.push({ ...item, isMatch: false });
+                    gameCards.push({ ...item, isMatch: true });
+                });
+            } else if (currentMode === 'image-word' || currentMode === 'sound-image') {
+                // Para estos modos, cada ítem tiene dos representaciones diferentes
+                modeData.items.slice(0, modeData.pairs).forEach(item => {
+                    // Primera carta: imagen
+                    gameCards.push({
+                        id: item.id,
+                        content: item.content,
+                        matchContent: item.match || item.sound,
+                        type: item.type,
+                        sound: item.sound,
+                        isMatch: false
+                    });
+                    
+                    // Segunda carta: palabra o sonido
+                    gameCards.push({
+                        id: item.id,
+                        content: item.match || item.sound,
+                        matchContent: item.content,
+                        type: 'text',
+                        sound: item.sound,
+                        isMatch: true
+                    });
+                });
+            }
+            
+            // Mezclar las cartas
+            gameCards = shuffleArray(gameCards);
+            
+            // Crear las cartas en el DOM
+            gameCards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.dataset.id = card.id;
+                cardElement.dataset.index = index;
+                cardElement.dataset.isMatch = card.isMatch;
+                cardElement.dataset.sound = card.sound || '';
+                
+                // Contenido frontal (reverso de la carta)
+                const front = document.createElement('div');
+                front.className = 'card-content card-front';
+                front.textContent = '?';
+                
+                // Contenido trasero (frente de la carta)
+                const back = document.createElement('div');
+                back.className = 'card-content card-back';
+                
+                // Personalizar el contenido según el modo de juego
+                if (currentMode === 'syllables' && !card.isMatch) {
+                    back.textContent = card.content;
+                    back.style.fontSize = '2.5rem';
+                } else if (currentMode === 'syllables' && card.isMatch) {
+                    back.textContent = card.content;
+                    back.style.fontSize = '2.5rem';
+                } else {
+                    back.textContent = card.content;
+                    if (card.type === 'emoji') {
+                        back.style.fontSize = '3rem';
+                    }
+                }
+                
+                cardElement.appendChild(front);
+                cardElement.appendChild(back);
+                
+                // Agregar evento de clic
+                cardElement.addEventListener('click', flipCard);
+                
+                // Agregar al tablero
+                gameBoard.appendChild(cardElement);
+                
+                // Guardar referencia a la carta
+                cards.push({
+                    element: cardElement,
+                    id: card.id,
+                    isFlipped: false,
+                    isMatched: false,
+                    isMatch: card.isMatch,
+                    content: card.content,
+                    matchContent: card.matchContent,
+                    type: card.type,
+                    sound: card.sound
+                });
+            });
+        }
+
+        // Voltear carta
+        function flipCard() {
+            if (lockBoard) return;
+            
+            const cardIndex = parseInt(this.dataset.index);
+            const card = cards[cardIndex];
+            
+            // No hacer nada si la carta ya está volteada o emparejada
+            if (card.isFlipped || card.isMatched) return;
+            
+            // Voltear la carta
+            this.classList.add('flipped');
+            card.isFlipped = true;
+            
+            // Reproducir sonido si es una carta de sonido
+            if (card.sound && currentMode === 'sound-image' && card.isMatch) {
+                playSound(card.sound);
+            }
+            
+            // Verificar si es la primera o segunda carta volteada
+            if (!hasFlippedCard) {
+                // Primera carta
+                hasFlippedCard = true;
+                firstCard = card;
+                return;
+            }
+            
+            // Segunda carta
+            secondCard = card;
+            checkForMatch();
+        }
+
+        // Verificar si hay coincidencia
+        function checkForMatch() {
+            const isMatch = firstCard.id === secondCard.id;
+            
+            if (isMatch) {
+                disableCards();
+                matchedPairs++;
+                updateScore();
+                
+                // Verificar si se completó el juego
+                if (matchedPairs === gameData[currentMode].pairs) {
+                    setTimeout(() => {
+                        alert(`¡Felicidades! Has completado el juego en modo ${getModeName(currentMode)}.`);
+                    }, 500);
+                }
+            } else {
+                unflipCards();
+            }
+        }
+
+        // Deshabilitar cartas emparejadas
+        function disableCards() {
+            firstCard.isMatched = true;
+            secondCard.isMatched = true;
+            
+            // Marcar como emparejadas visualmente
+            firstCard.element.classList.add('matched');
+            secondCard.element.classList.add('matched');
+            
+            // Eliminar eventos de clic
+            firstCard.element.removeEventListener('click', flipCard);
+            secondCard.element.removeEventListener('click', flipCard);
+            
+            resetBoard();
+        }
+
+        // Volver a voltear las cartas si no hay coincidencia
+        function unflipCards() {
+            lockBoard = true;
+            
+            setTimeout(() => {
+                firstCard.element.classList.remove('flipped');
+                secondCard.element.classList.remove('flipped');
+                
+                firstCard.isFlipped = false;
+                secondCard.isFlipped = false;
+                
+                resetBoard();
+            }, 1000);
+        }
+
+        // Reiniciar el tablero después de cada jugada
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        // Actualizar puntuación
+        function updateScore() {
+            scoreDisplay.textContent = `${matchedPairs}/${gameData[currentMode].pairs}`;
+        }
+
+        // Reiniciar juego
+        function resetGame() {
+            // Limpiar variables
+            cards = [];
+            matchedPairs = 0;
+            resetBoard();
+            
+            // Limpiar tablero
+            gameBoard.innerHTML = '';
+            
+            // Ocultar contador de puntuación
+            document.querySelector('.score-display').style.display = 'none';
+            
+            // Reiniciar puntuación
+            updateScore();
+            
+            // Mostrar selección de modos
+            document.querySelector('.game-modes').style.display = 'grid';
+            
+            // Habilitar botón de inicio si hay un modo seleccionado
+            if (currentMode) {
+                startBtn.disabled = false;
+            }
+        }
+
+        // Función para mezclar array (algoritmo de Fisher-Yates)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Reproducir sonido
+        function playSound(sound) {
+            if (sounds[sound]) {
+                sounds[sound].currentTime = 0;
+                sounds[sound].play().catch(e => console.error('Error al reproducir sonido:', e));
+            }
+        }
+
+        // Obtener nombre del modo de juego
+        function getModeName(mode) {
+            const names = {
+                'image-image': 'Imagen con Imagen',
+                'image-word': 'Imagen con Palabra',
+                'sound-image': 'Sonido con Imagen',
+                'syllables': 'Sílabas'
+            };
+            return names[mode] || '';
+        }
+
+        // Inicializar el juego cuando el DOM esté cargado
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

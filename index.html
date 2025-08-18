@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Menú Principal - Accesibilidad para Dislexia</title>
+    <!-- Hojas de estilo -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/menu-style.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- Cargar fuentes de Google Fonts como respaldo -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    
+   
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #3b82f6;
+            --accent-color: #0ea5e9;
+            --highlight-color: #0693d4;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --background-color: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            --card-shadow-hover: 0 35px 70px rgba(0,0,0,0.25);
+            --transition-speed: 0.7s;
+            --font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            --gradient-bg: linear-gradient(135deg, #f0f4f8 0%, #d6e8f5 50%, #e8f4fd 100%);
+        }
+
+        /* Modo oscuro */
+        body.dark-mode {
+            --primary-color: #60a5fa;
+            --secondary-color: #3b82f6;
+            --accent-color: #06b6d4;
+            --highlight-color: #0ea5e9;
+            --text-color: #f1f5f9;
+            --text-light: #cbd5e1;
+            --background-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --card-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            --card-shadow-hover: 0 35px 70px rgba(0,0,0,0.6);
+            --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        /* Modos de daltonismo */
+        body.colorblind-protanopia {
+            --accent-color: #fbbf24;
+            --highlight-color: #f59e0b;
+        }
+
+        body.colorblind-protanopia .card-icon {
+            color: #fbbf24 !important;
+        }
+
+        body.colorblind-protanopia .menu-card:hover .card-icon,
+        body.colorblind-protanopia .menu-card.center .card-icon {
+            color: #f59e0b !important;
+        }
+
+        body.colorblind-protanopia .card-button {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+        }
+
+        body.colorblind-tritanopia {
+            --accent-color: #ef4444;
+            --highlight-color: #dc2626;
+        }
+
+        body.colorblind-tritanopia .card-icon {
+            color: #ef4444 !important;
+        }
+
+        body.colorblind-tritanopia .menu-card:hover .card-icon,
+        body.colorblind-tritanopia .menu-card.center .card-icon {
+            color: #dc2626 !important;
+        }
+
+        body.colorblind-tritanopia .card-button {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--gradient-bg);
+            background-attachment: fixed;
+            font-family: var(--font-family);
+            min-height: 100vh;
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Controles superiores */
+        .toggle-container-fixed {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+
+        .toggle-darkmode-fixed .switch {
+            position: relative;
+            display: inline-block;
+            width: 55px;
+            height: 28px;
+        }
+
+        .toggle-darkmode-fixed .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 28px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(27px);
+        }
+
+        /* Contenedor principal */
+        .main-menu-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .main-title {
+            text-align: center;
+            color: var(--text-color);
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Carrusel */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1500px;
+            overflow: visible;
+        }
+
+        .carousel-track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            transition: all var(--transition-speed) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            will-change: transform, opacity;
+        }
+
+        /* Posiciones del carrusel - todas las tarjetas centradas inicialmente */
+        .carousel-slide {
+            transform: translateX(0) scale(0.85) rotateY(0deg);
+            z-index: 1;
+            opacity: 0.6;
+        }
+
+        /* Tarjeta activa (centrada) */
+        .carousel-slide.active {
+            transform: translateX(0) scale(1) rotateY(0deg);
+            z-index: 3;
+            opacity: 1;
+        }
+
+        /* Tarjeta anterior */
+        .carousel-slide.prev {
+            transform: translateX(-400px) scale(0.85) rotateY(15deg);
+            z-index: 2;
+            opacity: 0.7;
+        }
+
+        /* Tarjeta siguiente */
+        .carousel-slide.next {
+            transform: translateX(400px) scale(0.85) rotateY(-15deg);
+            z-index: 2;
+            opacity: 0.7;
+        }
+
+        /* Tarjetas lejanas */
+        .carousel-slide.far {
+            transform: translateX(0) scale(0.6) rotateY(0deg);
+            z-index: 0;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Tarjetas */
+        .menu-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 45px 35px;
+            width: 380px;
+            height: 500px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            border-radius: 25px 25px 0 0;
+        }
+
+        .menu-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .menu-card:hover::after,
+        .carousel-slide.active .menu-card::after {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        .menu-card:hover,
+        .carousel-slide.active .menu-card {
+            transform: translateY(-15px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-icon {
+            font-size: 4.5rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            display: block;
+            transition: all 0.4s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        .menu-card:hover .card-icon,
+        .carousel-slide.active .card-icon {
+            transform: scale(1.15) rotate(5deg);
+            color: var(--secondary-color);
+            filter: drop-shadow(0 8px 16px rgba(59, 130, 246, 0.3));
+        }
+
+        .card-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 25px;
+            line-height: 1.2;
+            transition: color 0.3s ease;
+        }
+
+        .carousel-slide.active .card-title {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            text-align: left;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-slide.active .card-description {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .card-button {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
+            color: white;
+            text-decoration: none;
+            padding: 18px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-block;
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 35px rgba(30, 64, 175, 0.3);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card-button:hover::before {
+            left: 100%;
+        }
+
+        .card-button:hover,
+        .carousel-slide.active .card-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(30, 64, 175, 0.4);
+        }
+
+      /* Botones de navegación mejorados - estilo elegante y transparente */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--primary-color);
+    font-size: 2.2rem;
+    width: 50px;
+    height: 120px;
+    cursor: pointer;
+    border-radius: 20px;
+    z-index: 10;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    overflow: hidden;
+}
+
+.carousel-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.carousel-btn:hover::before {
+    left: 100%;
+}
+
+.carousel-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: var(--secondary-color);
+    transform: translateY(-50%) scale(1.02);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    opacity: 1;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.carousel-btn:active {
+    transform: translateY(-50%) scale(0.98);
+    box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.carousel-btn-prev {
+    left: -110px;
+}
+
+.carousel-btn-next {
+    right: -110px;
+}
+
+/* Modo oscuro para los botones */
+body.dark-mode .carousel-btn {
+    background: rgba(30, 41, 59, 0.4);
+    border-color: rgba(100, 116, 139, 0.3);
+    color: var(--primary-color);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .carousel-btn:hover {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(100, 116, 139, 0.5);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive para los botones mejorados */
+@media (max-width: 1400px) {
+    .carousel-btn-prev {
+        left: -90px;
+    }
+
+    .carousel-btn-next {
+        right: -90px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .carousel-btn {
+        width: 70px;
+        height: 400px;
+        font-size: 2rem;
+        border-radius: 18px;
+    }
+    
+    .carousel-btn-prev {
+        left: -80px;
+    }
+
+    .carousel-btn-next {
+        right: -80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-btn {
+        width: 60px;
+        height: 360px;
+        font-size: 1.8rem;
+        border-radius: 15px;
+    }
+    
+    .carousel-btn-prev {
+        left: -70px;
+    }
+
+    .carousel-btn-next {
+        right: -70px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-btn {
+        width: 50px;
+        height: 320px;
+        font-size: 1.5rem;
+        border-radius: 12px;
+        opacity: 0.8;
+    }
+    
+    .carousel-btn-prev {
+        left: -60px;
+    }
+
+    .carousel-btn-next {
+        right: -60px;
+    }
+}
+        /* Indicadores mejorados */
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: rgba(30, 64, 175, 0.3);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
+
+        .indicator.active {
+            background: var(--primary-color);
+            transform: scale(1.4);
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
+        }
+
+        .indicator.active::before {
+            width: 8px;
+            height: 8px;
+            background: white;
+        }
+
+        .indicator:hover:not(.active) {
+            background: rgba(30, 64, 175, 0.6);
+            transform: scale(1.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .carousel-slide.prev {
+                transform: translateX(-300px) scale(0.8) rotateY(20deg);
+            }
+
+            .carousel-slide.next {
+                transform: translateX(300px) scale(0.8) rotateY(-20deg);
+            }
+
+            .menu-card {
+                width: 340px;
+                height: 460px;
+                padding: 35px 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.2rem;
+                margin-bottom: 40px;
+            }
+
+            .carousel-container {
+                height: 520px;
+            }
+
+            .carousel-slide.prev {
+                transform: translateX(-250px) scale(0.75) rotateY(25deg);
+            }
+
+            .carousel-slide.next {
+                transform: translateX(250px) scale(0.75) rotateY(-25deg);
+            }
+
+            .menu-card {
+                padding: 30px 25px;
+                width: 300px;
+                height: 420px;
+            }
+
+            .card-icon {
+                font-size: 3.5rem;
+                margin-bottom: 20px;
+            }
+
+            .card-title {
+                font-size: 1.8rem;
+            }
+
+            .card-description {
+                font-size: 1rem;
+                margin-bottom: 25px;
+            }
+
+            .card-button {
+                padding: 15px 35px;
+                font-size: 1rem;
+            }
+
+            .carousel-btn-prev {
+                left: 30px;
+            }
+
+            .carousel-btn-next {
+                right: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .carousel-container {
+                height: 480px;
+            }
+
+            .toggle-container-fixed {
+                top: 10px;
+                right: 10px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .carousel-slide.prev {
+                transform: translateX(-200px) scale(0.7) rotateY(30deg);
+            }
+
+            .carousel-slide.next {
+                transform: translateX(200px) scale(0.7) rotateY(-30deg);
+            }
+
+            .menu-card {
+                padding: 25px 20px;
+                width: 260px;
+                height: 380px;
+            }
+
+            .main-title {
+                font-size: 1.8rem;
+                margin-bottom: 30px;
+            }
+
+            .card-icon {
+                font-size: 3rem;
+                margin-bottom: 15px;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+
+            .card-description {
+                font-size: 0.9rem;
+                margin-bottom: 20px;
+            }
+
+            .card-button {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+
+            .carousel-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+
+            .carousel-btn-prev {
+                left: 15px;
+            }
+
+            .carousel-btn-next {
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="toggle-container-fixed">
+        <div class="colorblind-selector">
+            <select id="colorblindMode" aria-label="Modo para daltónicos">
+                <option value="normal">Original</option>
+                <option value="protanopia">Daltonismo Rojo-Verde</option>
+                <option value="tritanopia">Tritanopia</option>
+            </select>
+        </div>
+
+        <div class="toggle-darkmode-fixed">
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <div class="slider"></div>
+            </label>
+        </div>
+    </div>
+
+    <div class="main-menu-container">
+        <h1 class="main-title">Herramientas de Accesibilidad para Dislexia</h1>
+        
+        <div class="carousel-container">
+            <div class="carousel-track">
+                <div class="carousel-slide">
+                    <div class="menu-card">
+                        <i class="fas fa-book-reader card-icon"></i>
+                        <h2 class="card-title">Herramienta de Lectura</h2>
+                        <p class="card-description">
+                            Transforma cualquier contenido web en una experiencia de lectura accesible. Incluye lectura de voz, personalización de texto y herramientas especiales diseñadas para personas con dislexia.
+                        </p>
+                        <a href="seccion.html" class="section-button">Acceder</a>
+                    </div>
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="menu-card">
+                        <i class="fas fa-file-pdf card-icon"></i>
+                        <h2 class="card-title">Editor de PDF</h2>
+                        <p class="card-description">
+                            Herramienta profesional para modificar documentos PDF con funciones de accesibilidad avanzadas. Ajusta fuentes, colores, espaciado y formato para crear documentos más legibles y accesibles para todos.
+                        </p>
+                        <a href="editor_pdf.html" class="section-button">Acceder</a>
+                    </div>
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="menu-card">
+                        <i class="fas fa-gamepad card-icon"></i>
+                        <h2 class="card-title">Juegos Educativos</h2>
+                        <p class="card-description">
+                            Colección de juegos interactivos especialmente diseñados para mejorar las habilidades de lectura y comprensión. Divertidos ejercicios que ayudan a desarrollar destrezas mientras te entretienes.
+                        </p>
+                        <a href="juegos.html" class="section-button">Acceder</a>
+                    </div>
+                </div>
+            </div>
+            
+          <button class="carousel-btn carousel-btn-prev" aria-label="Herramienta anterior">
+    <i class="fas fa-chevron-left"></i>
+</button>
+<button class="carousel-btn carousel-btn-next" aria-label="Siguiente herramienta">
+    <i class="fas fa-chevron-right"></i>
+</button>
+        </div>
+
+        <div class="carousel-indicators">
+            <div class="indicator active" data-slide="0"></div>
+            <div class="indicator" data-slide="1"></div>
+            <div class="indicator" data-slide="2"></div>
+        </div>
+    </div>
+
+
+     <script src="scripts/index.js"></script>
+    <script src="scripts/menu.js"></script>
+    <script>
+       // Carrusel mejorado con navegación corregida
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.querySelector('.carousel-track');
+    const slides = Array.from(document.querySelectorAll('.carousel-slide'));
+    const prevBtn = document.querySelector('.carousel-btn-prev');
+    const nextBtn = document.querySelector('.carousel-btn-next');
+    const indicators = Array.from(document.querySelectorAll('.indicator'));
+    
+    let currentSlide = 0;
+    let isAnimating = false;
+
+    function updateCarousel() {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        slides.forEach((slide, index) => {
+            // Remover todas las clases
+            slide.classList.remove('active', 'prev', 'next', 'far');
+            
+            // Determinar la posición de cada slide
+            if (index === currentSlide) {
+                slide.classList.add('active');
+            } else if (index === (currentSlide - 1 + slides.length) % slides.length) {
+                slide.classList.add('prev');
+            } else if (index === (currentSlide + 1) % slides.length) {
+                slide.classList.add('next');
+            } else {
+                slide.classList.add('far');
+            }
+        });
+        
+        // Actualizar indicadores
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentSlide);
+        });
+
+        // Permitir siguiente animación después de completar la transición
+        setTimeout(() => {
+            isAnimating = false;
+        }, 700);
+    }
+
+    function goToSlide(slideIndex) {
+        if (slideIndex === currentSlide || isAnimating) return;
+        currentSlide = slideIndex;
+        updateCarousel();
+    }
+
+    function nextSlide() {
+        if (isAnimating) return;
+        const nextIndex = (currentSlide + 1) % slides.length;
+        goToSlide(nextIndex);
+    }
+
+    function prevSlide() {
+        if (isAnimating) return;
+        const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+        goToSlide(prevIndex);
+    }
+
+    // Event listeners - asegurándonos de que no haya duplicados
+    if (nextBtn) {
+        nextBtn.removeEventListener('click', nextSlide); // Remover listener existente
+        nextBtn.addEventListener('click', nextSlide);
+    }
+    
+    if (prevBtn) {
+        prevBtn.removeEventListener('click', prevSlide); // Remover listener existente
+        prevBtn.addEventListener('click', prevSlide);
+    }
+
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            goToSlide(index);
+        });
+    });
+
+    // Click en cualquier tarjeta para centrarla
+    slides.forEach((slide, index) => {
+        slide.addEventListener('click', (e) => {
+            if (index !== currentSlide) {
+                e.preventDefault();
+                goToSlide(index);
+            }
+        });
+    });
+
+    // Touch/Swipe support
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+
+    track.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isDragging = true;
+    }, { passive: true });
+
+    track.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = startX - currentX;
+        const diffY = startY - currentY;
+
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    track.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        const diffX = startX - endX;
+        const diffY = startY - endY;
+
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+            if (diffX > 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }
+    }, { passive: true });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevSlide();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            nextSlide();
+        } else if (e.key >= '1' && e.key <= '3') {
+            e.preventDefault();
+            goToSlide(parseInt(e.key) - 1);
+        }
+    });
+
+    // Inicializar
+    currentSlide = 0;
+    updateCarousel();
+    
+    // Debug - verificar que los botones existan
+    console.log('Botón anterior:', prevBtn);
+    console.log('Botón siguiente:', nextBtn);
+    console.log('Slides encontrados:', slides.length);
+});
+    </script>
+</body>
+</html>
+
+
+

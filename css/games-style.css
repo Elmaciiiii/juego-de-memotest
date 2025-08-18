@@ -1,0 +1,181 @@
+:root {
+  --game-card-width: 320px;
+  --game-card-min-height: 320px;
+  --game-card-radius: 16px;
+  --game-card-bg: #fff;
+  --game-card-shadow: 0 2px 8px rgba(30, 64, 175, 0.12);
+  --game-card-shadow-hover: 0 8px 24px rgba(30, 64, 175, 0.20);
+  --game-card-title: var(--primary-color, #1e40af);
+  --game-card-title-disabled: #aaa;
+  --game-card-bg-disabled: #f3f3f3;
+  --game-card-text-disabled: #aaa;
+  --game-card-icon-disabled: #bbb;
+}
+
+.games-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.game-card {
+  background: var(--game-card-bg);
+  border-radius: var(--game-card-radius);
+  box-shadow: var(--game-card-shadow);
+  width: var(--game-card-width);
+  min-height: var(--game-card-min-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+  position: relative;
+}
+
+.game-card:hover {
+  transform: scale(1.03);
+  box-shadow: var(--game-card-shadow-hover);
+  z-index: 2;
+}
+
+.game-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--game-card-title);
+  font-family: 'Comic Neue', 'Comic Sans MS', Arial, sans-serif;
+}
+
+.game-canvas {
+  width: 280px !important;
+  height: 280px !important;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e3f2fd;
+  border-radius: 12px;
+}
+
+.back-link {
+  display: inline-block;
+  margin: 1.5rem 0 0 2rem;
+  color: #0074d9;
+  font-size: 1rem;
+  text-decoration: none;
+}
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* Tarjeta deshabilitada */
+.game-card.disabled,
+.game-card[aria-disabled="true"] {
+  opacity: 0.6;
+  filter: grayscale(0.7);
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+.game-card.disabled .game-title,
+.game-card[aria-disabled="true"] .game-title {
+  color: var(--game-card-title-disabled);
+}
+.game-card.disabled .game-canvas,
+.game-card[aria-disabled="true"] .game-canvas {
+  background: var(--game-card-bg-disabled);
+  color: var(--game-card-icon-disabled);
+}
+.game-card.disabled .game-desc,
+.game-card[aria-disabled="true"] .game-desc {
+  color: var(--game-card-text-disabled);
+}
+
+/* Modo oscuro */
+body.dark-mode .game-card {
+  background: #23272f;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.20);
+}
+body.dark-mode .game-title {
+  color: #90caf9;
+}
+body.dark-mode .game-card.disabled .game-title {
+  color: #6c7a89;
+}
+body.dark-mode .game-canvas {
+  background: #243447;
+  color: #90caf9;
+}
+body.dark-mode .game-card.disabled .game-canvas {
+  background: #2c2c2c;
+  color: #555;
+}
+body.dark-mode .game-desc {
+  color: #b0bec5;
+}
+body.dark-mode .game-card.disabled .game-desc {
+  color: #666;
+}
+
+/* Daltonismo: Protanopia (Rojo-Verde) */
+body.protanopia .game-title,
+body.protanopia .game-card .game-title {
+  color: #0ea5e9;
+}
+body.protanopia .game-card {
+  background: #f0faff;
+}
+body.protanopia .game-canvas {
+  background: #d1f3fa;
+}
+
+body.tritanopia .game-title,
+body.tritanopia .game-card .game-title {
+  color: #ef4444;
+}
+body.tritanopia .game-card {
+  background: #fff6f6;
+}
+body.tritanopia .game-canvas {
+  background: #ffeaea;
+}
+
+body.dark-mode.protanopia .game-title,
+body.dark-mode.protanopia .game-card .game-title {
+  color: #0ea5e9;
+}
+body.dark-mode.protanopia .game-card {
+  background: #193249;
+}
+body.dark-mode.protanopia .game-canvas {
+  background: #1e3a4c;
+}
+
+body.dark-mode.tritanopia .game-title,
+body.dark-mode.tritanopia .game-card .game-title {
+  color: #ef4444;
+}
+body.dark-mode.tritanopia .game-card {
+  background: #3c1b1b;
+}
+body.dark-mode.tritanopia .game-canvas {
+  background: #5e2323;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .game-card, .game-card.disabled {
+    width: 98vw;
+    min-width: unset;
+    min-height: 220px;
+    padding: 1rem 0.5rem;
+  }
+  .game-canvas {
+    width: 92vw !important;
+    height: 180px !important;
+  }
+}

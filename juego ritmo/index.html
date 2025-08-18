@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Ritmo Musical </title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪇</text></svg>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.2/css/open-dyslexic.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script>
+    // This is needed to handle browser autoplay policies
+    function startAudioContext() {
+      if (getAudioContext().state !== 'running') {
+        getAudioContext().resume();
+      }
+    }
+  </script>
+<body>
+  <div class="contenedor">
+    <header>
+      <h1 class="titulo">🎵 Repetí la Secuencia Musical</h1>
+      <button id="ayuda" class="btn-ayuda" aria-label="Ayuda">
+        <span>❓</span>
+        <span>Ayuda</span>
+      </button>
+    </header>
+    <div id="controles">
+      <label for="nivel"><strong>Nivel:</strong></label>
+      <select id="nivel">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+
+      <label><strong>Instrumentos:</strong></label>
+      <select id="instrumentoCantidad">
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+
+      <button id="comenzar">🎬 Comenzar</button>
+    </div>
+
+    <main id="juego"></main>
+    
+    <div id="mensaje" class="mensaje-juego"></div>
+
+    <footer>
+      <p>🧠 Consejo: escuchá con atención antes de tocar. ¡La música se memoriza mejor con calma! 🎶</p>
+    </footer>
+  </div>
+
+  <!-- Modal de Ayuda -->
+  <div id="modal-ayuda" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar">&times;</span>
+      <h2>🎵 Cómo Jugar</h2>
+      <div class="instrucciones">
+        <h3>Objetivo del Juego</h3>
+        <p>Escucha atentamente la secuencia de sonidos y luego repítela en el mismo orden.</p>
+        
+        <h3>Niveles</h3>
+        <ul>
+          <li><strong>Nivel 1:</strong> 3 sonidos</li>
+          <li><strong>Nivel 2:</strong> 5 sonidos</li>
+          <li><strong>Nivel 3:</strong> 7 sonidos</li>
+          <li><strong>Nivel 4:</strong> 9 sonidos</li>
+          <li><strong>Nivel 5:</strong> 12 sonidos</li>
+        </ul>
+        
+        <h3>Instrumentos</h3>
+        <p>Puedes elegir entre 3 y 6 instrumentos diferentes para jugar.</p>
+        
+        <h3>Consejos para jugadores con dislexia</h3>
+        <ul>
+          <li>Tómate tu tiempo para responder</li>
+          <li>Si te equivocas, ¡no te preocupes! Inténtalo de nuevo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Perdiste -->
+  <div id="perdisteModal" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar">&times;</span>
+      <h2>🎵 ¡Ups! Te equivocaste</h2>
+      <div class="resultado-juego">
+        <div class="estadisticas">
+          <h3>📊 Tu Resultado</h3>
+          <p><strong>Ronda alcanzada:</strong> <span id="rondaAlcanzada">0</span></p>
+          <p><strong>Secuencia más larga:</strong> <span id="secuenciaMasLarga">0</span> sonidos</p>
+          <p><strong>Nivel jugado:</strong> <span id="nivelJugado">1</span></p>
+        </div>
+        
+        <div class="consejos">
+          <h3>💡 Consejos para mejorar</h3>
+          <ul>
+            <li>Escucha con atención antes de tocar</li>
+            <li>No te apresures, tómate tu tiempo</li>
+            <li>Practica con secuencias más cortas</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="botones-modal">
+        <button id="reintentar" class="btn-modal">🔄 Reintentar</button>
+        <button id="cambiarConfig" class="btn-modal btn-secundario">⚙️ Cambiar Configuración</button>
+        <button id="cerrarModal" class="btn-modal btn-secundario">❌ Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="sketch.js"></script>
+  <script>
+    // Funcionalidad del modal
+    const modal = document.getElementById('modal-ayuda');
+    const btn = document.getElementById('ayuda');
+    const span = document.getElementsByClassName('cerrar')[0];
+    const body = document.body;
+
+    // Función para deshabilitar scroll
+    function deshabilitarScroll() {
+      body.style.overflow = 'hidden';
+      body.style.position = 'fixed';
+      body.style.width = '100%';
+    }
+
+    // Función para habilitar scroll
+    function habilitarScroll() {
+      body.style.overflow = '';
+      body.style.position = '';
+      body.style.width = '';
+    }
+
+    // Función para mostrar el modal
+    function mostrarModal() {
+      modal.classList.add('mostrar');
+      deshabilitarScroll();
+    }
+
+    // Función para ocultar el modal
+    function ocultarModal() {
+      modal.classList.remove('mostrar');
+      habilitarScroll();
+    }
+
+    // Event listeners
+    btn.addEventListener('click', mostrarModal);
+    span.addEventListener('click', ocultarModal);
+
+    // Cerrar al hacer clic fuera del contenido
+    window.addEventListener('click', function(event) {
+      if (event.target === modal) {
+        ocultarModal();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de PDF</title>
+    <link rel="stylesheet" href="css/editor_pdf.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js"></script>
+
+    <!-- Filtros SVG para daltonismo -->
+    <svg class="svg-filters" style="display: none;">
+        <filter id="protanopia" x="0" y="0">
+            <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0 0.558, 0.442, 0, 0, 0 0, 0.242, 0.758, 0, 0 0, 0, 0, 1, 0" />
+        </filter>
+        <filter id="tritanopia" x="0" y="0">
+            <feColorMatrix type="matrix" values="0.95, 0.05, 0, 0, 0 0, 0.433, 0.567, 0, 0 0, 0.475, 0.525, 0, 0 0, 0, 0, 1, 0" />
+        </filter>
+    </svg>
+
+    <!-- Botón de modo daltónicoo --> 
+    <button id="colorblindModeBtn" class="colorblind-mode-btn" style="display: none;">
+        <span class="icon">🎨</span>
+        <span class="label">Modo daltonismo</span>
+        <span class="indicator">▼</span>
+        <span class="dropdown">
+            <span class="option" data-mode="normal">
+                <span class="preview normal">👁️</span>
+                <span class="text">Normal</span>
+            </span>
+            <span class="option" data-mode="protanopia">
+                <span class="preview protanopia">👁️</span>
+                <span class="text">Protanopia</span>
+            </span>
+            <span class="option" data-mode="tritanopia">
+                <span class="preview tritanopia">👁️</span>
+                <span class="text">Tritanopia</span>
+            </span>
+        </span>
+    </button>
+</head>
+<body>
+<div class="container">
+<div class="header">
+  <div style="display: flex; justify-content: space-between;  width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <div>
+          <h1>📄 Editor de PDF</h1>
+          <p>Edita tus documentos PDF de forma fácil y rápida</p>
+      </div>
+      <!-- Selector de modo daltónico -->
+      <div class="colorblind-selector" style="margin-left: 20px;">
+          <div style="position: relative; display: inline-block;">
+              <select id="colorblindMode" aria-label="Modo para daltónicos">
+                  <option value="normal">🎨 Original</option>
+                  <option value="protanopia">🔴 Daltonismo Rojo-Verde</option>
+                  <option value="tritanopia">🔵 Tritanopia</option>
+              </select>
+              <div style="
+                  position: absolute;
+                  right: 12px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  pointer-events: none;
+                  color: white;
+              ">
+                  ▼
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="upload-section" id="uploadSection">
+  <h2 style="font-size: 30px; text-align: center; margin: 0 0 20px;">Gestión de Documentos PDF</h2>
+  <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">📁</div>
+      <h3>Arrastra tu archivo PDF aquí</h3>
+      <p>o haz clic para seleccionar</p>
+      <input type="file" id="fileInput" accept=".pdf">
+      <br><br>
+      <button class="btn" onclick="document.getElementById('fileInput').click()">
+          Seleccionar PDF
+      </button>
+  </div>
+  <br>
+  <button class="btn" id="loadBtn" disabled>Cargar Contenido</button>
+</div>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p>Cargando PDF...</p>
+</div>
+
+<div class="main-content" id="mainContent">
+  <div class="controls">
+      <h1 style="font-size: 30px; text-align: center; margin: 0;">Personalización de PDF</h1>
+      <button id="menuToggle" class="menu-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+      </button>
+  </div>
+
+  <div class="editor-layout">
+      <div class="controls-panel">
+          <div class="control-group">
+              <h3>📝 Tamaño de Texto</h3>
+              <label for="fontSize">Tamaño:</label>
+              <input type="range" id="fontSize" value="16" min="12" max="50">
+              <span id="fontSizeValue">16px</span>
+          </div>
+
+          <div class="control-group">
+              <h3>🎨 Color de Texto</h3>
+              <div class="color-grid" id="textColorGrid">
+                  <div class="color-option selected" style="background-color: #000000" data-color="#000000"></div>
+                  <div class="color-option" style="background-color: #333333" data-color="#333333"></div>
+                  <div class="color-option" style="background-color: #666666" data-color="#666666"></div>
+                  <div class="color-option" style="background-color: #999999" data-color="#999999"></div>
+                  <div class="color-option" style="background-color: #e74c3c" data-color="#e74c3c"></div>
+                  <div class="color-option" style="background-color: #3498db" data-color="#3498db"></div>
+                  <div class="color-option" style="background-color: #2ecc71" data-color="#2ecc71"></div>
+                  <div class="color-option" style="background-color: #f39c12" data-color="#f39c12"></div>
+                  <div class="color-option" style="background-color: #9b59b6" data-color="#9b59b6"></div>
+                  <div class="color-option" style="background-color: #1abc9c" data-color="#1abc9c"></div>
+                  <div class="color-option" style="background-color: #34495e" data-color="#34495e"></div>
+                  <div class="color-option" style="background-color: #e67e22" data-color="#e67e22"></div>
+              </div>
+          </div>
+
+          <div class="control-group">
+              <h3>🎨 Color de Fondo</h3>
+              <div class="color-grid" id="bgColorGrid">
+                  <div class="color-option selected" style="background-color: #ffffff" data-color="#ffffff"></div>
+                  <div class="color-option" style="background-color: #f8f9fa" data-color="#f8f9fa"></div>
+                  <div class="color-option" style="background-color: #e9ecef" data-color="#e9ecef"></div>
+                  <div class="color-option" style="background-color: #dee2e6" data-color="#dee2e6"></div>
+                  <div class="color-option" style="background-color: #fff3cd" data-color="#fff3cd"></div>
+                  <div class="color-option" style="background-color: #d4edda" data-color="#d4edda"></div>
+                  <div class="color-option" style="background-color: #cce5ff" data-color="#cce5ff"></div>
+                  <div class="color-option" style="background-color: #f8d7da" data-color="#f8d7da"></div>
+                  <div class="color-option" style="background-color: #e2e3e5" data-color="#e2e3e5"></div>
+                  <div class="color-option" style="background-color: #ffeaa7" data-color="#ffeaa7"></div>
+                  <div class="color-option" style="background-color: #fab1a0" data-color="#fab1a0"></div>
+                  <div class="color-option" style="background-color: #fd79a8" data-color="#fd79a8"></div>
+              </div>
+          </div>
+
+          <div class="control-group">
+              <h3>🔤 Fuente</h3>
+              <label for="fontFamily">Tipo de letra:</label>
+              <select id="fontFamily">
+                  <option value="OpenDyslexic">OpenDyslexic</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                  <option value="Courier New">Courier New</option>
+                  <option value="Helvetica">Helvetica</option>
+                  
+              </select>
+          </div>
+      </div>
+
+      <div class="preview-area">
+          <div class="preview-header">
+              <h3>👁️ Vista Previa</h3>
+              <div class="page-nav">
+                  <button id="prevPage" onclick="changePage(-1)">◀ Anterior</button>
+                  <span id="pageInfo">Página 1 de 1</span>
+                  <button id="nextPage" onclick="changePage(1)">Siguiente ▶</button>
+              </div>
+          </div>
+          <div class="preview-content">
+              <div id="pdfPreview">
+                  <p>El contenido del PDF aparecerá aquí una vez cargado...</p>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+        <div class="download-section" id="downloadSection" style="display: none;">
+            <button class="btn btn-download" id="downloadBtn">
+                📥 Descargar PDF Editado
+            </button>
+        </div>
+    </div>
+    <script src="scripts/editor_pdf_fixed.js"></script>
+
+</body>
+</html>

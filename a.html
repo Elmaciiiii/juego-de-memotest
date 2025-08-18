@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controles de Accesibilidad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Variables para tema claro */
+            --primary: #6366f1;
+            --primary-light: #8b5cf6;
+            --secondary: #0ea5e9;
+            --accent: #10b981;
+            --accent-warm: #f59e0b;
+            --surface: #ffffff;
+            --surface-elevated: #f8fafc;
+            --surface-secondary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-accent: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
+            --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Controles de accesibilidad */
+        .accessibility-controls {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 100;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Contenedor de cada control */
+        .control-group {
+            position: relative;
+        }
+
+        /* Botón base */
+        .control-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+            font-family: inherit;
+            color: var(--text-primary);
+            min-width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .control-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .control-btn:hover::before {
+            opacity: 0.1;
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Toggle de modo oscuro */
+        .dark-mode-toggle {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary);
+            position: relative;
+        }
+
+        .dark-mode-toggle .icon {
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .dark-mode-toggle:hover .icon {
+            transform: rotate(180deg);
+        }
+
+        /* Selector de daltonismo */
+        .colorblind-selector {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            min-width: 160px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .colorblind-selector:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-1px);
+        }
+
+        .colorblind-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            outline: none;
+        }
+
+        .colorblind-select:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Icono de dropdown personalizado */
+        .colorblind-selector::after {
+            content: '▼';
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .colorblind-selector:hover::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Opciones del select */
+        .colorblind-select option {
+            background: var(--surface);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            font-family: inherit;
+        }
+
+        /* Tooltips informativos */
+        .tooltip {
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-right: 0.75rem;
+            background: var(--surface);
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-left-color: var(--surface);
+        }
+
+        .control-group:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) translateX(-5px);
+        }
+
+        /* Contenido de demostración */
+        .demo-content {
+            max-width: 800px;
+            margin: 6rem auto 2rem;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        .demo-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .demo-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Ejemplos de colores */
+        .color-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .color-card {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .color-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .color-swatch {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .primary-swatch { background: var(--primary); }
+        .secondary-swatch { background: var(--secondary); }
+        .accent-swatch { background: var(--accent); }
+        .warm-swatch { background: var(--accent-warm); }
+
+        /* Estados activos */
+        .active-state {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .active-state:hover::before {
+            opacity: 0.2;
+        }
+
+        /* Modo oscuro */
+        body.dark-mode {
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-secondary: #475569;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #475569;
+            --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        /* Filtros para daltonismo */
+        body.protanopia {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9;
+            --accent: #f59e0b;
+            --accent-warm: #eab308;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #0ea5e9 100%);
+        }
+
+        body.deuteranopia {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #f59e0b;
+            --accent: #eab308;
+            --accent-warm: #f97316;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
+        }
+
+        body.tritanopia {
+            --primary: #dc2626;
+            --primary-light: #ef4444;
+            --secondary: #16a34a;
+            --accent: #16a34a;
+            --accent-warm: #dc2626;
+            --gradient-primary: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            --gradient-accent: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .accessibility-controls {
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                left: 2rem;
+                top: auto;
+                flex-direction: row;
+                justify-content: center;
+                gap: 0.75rem;
+            }
+
+            .colorblind-selector {
+                flex: 1;
+                min-width: auto;
+            }
+
+            .tooltip {
+                display: none;
+            }
+
+            .demo-content {
+                margin: 2rem auto 8rem;
+                padding: 2rem;
+            }
+
+            .demo-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Controles de accesibilidad -->
+    <div class="accessibility-controls">
+        <!-- Selector de daltonismo -->
+        <div class="control-group">
+            <div class="tooltip">Filtros para daltonismo</div>
+            <div class="colorblind-selector">
+                <select class="colorblind-select" id="colorblindMode" aria-label="Modo para daltónicos">
+                    <option value="normal">🎨 Visión Normal</option>
+                    <option value="protanopia">🔴 Protanopia (Rojo)</option>
+                    <option value="deuteranopia">🟢 Deuteranopia (Verde)</option>
+                    <option value="tritanopia">🔵 Tritanopia (Azul)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Toggle de modo oscuro -->
+        <div class="control-group">
+            <div class="tooltip">Cambiar tema</div>
+            <button class="control-btn dark-mode-toggle" id="darkModeToggle" aria-label="Alternar modo oscuro">
+                <span class="icon">🌙</span>
+            </button>
+        </div>
+    </div>
+
+ 
+
+    <script>
+        // Referencias a los elementos
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const colorblindMode = document.getElementById('colorblindMode');
+        const darkModeIcon = darkModeToggle.querySelector('.icon');
+
+        // Funciones para persistencia de datos (sin localStorage)
+        let currentTheme = 'light';
+        let currentColorMode = 'normal';
+
+        // Aplicar tema oscuro
+        function applyDarkMode(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                darkModeIcon.textContent = '☀️';
+                darkModeToggle.setAttribute('aria-label', 'Cambiar a modo claro');
+                currentTheme = 'dark';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeIcon.textContent = '🌙';
+                darkModeToggle.setAttribute('aria-label', 'Cambiar a modo oscuro');
+                currentTheme = 'light';
+            }
+        }
+
+        // Aplicar filtro de daltonismo
+        function applyColorblindFilter(mode) {
+            // Remover todas las clases de daltonismo
+            document.body.classList.remove('protanopia', 'deuteranopia', 'tritanopia');
+            
+            // Agregar la nueva clase si no es normal
+            if (mode !== 'normal') {
+                document.body.classList.add(mode);
+            }
+            
+            // Preservar modo oscuro si está activo
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            currentColorMode = mode;
+            
+            // Log para debugging
+            console.log(`Filtro aplicado: ${mode}`);
+        }
+
+        // Event listeners
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkMode = !document.body.classList.contains('dark-mode');
+            applyDarkMode(isDarkMode);
+        });
+
+        colorblindMode.addEventListener('change', (e) => {
+            applyColorblindFilter(e.target.value);
+        });
+
+        // Efecto de pulsación en botones
+        function addRippleEffect(element) {
+            element.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        }
+
+        // Agregar efecto ripple a los botones
+        addRippleEffect(darkModeToggle);
+
+        // Añadir animación CSS para el efecto ripple
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Accessibility: mejorar navegación por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+        });
+
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('keyboard-navigation');
+        });
+
+        // Agregar estilos para navegación por teclado
+        const keyboardStyle = document.createElement('style');
+        keyboardStyle.textContent = `
+            .keyboard-navigation .control-btn:focus {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+            }
+            
+            .keyboard-navigation .colorblind-select:focus {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+            }
+        `;
+        document.head.appendChild(keyboardStyle);
+
+        console.log('Controles de accesibilidad inicializados correctamente');
+    </script>
+</body>
+</html>

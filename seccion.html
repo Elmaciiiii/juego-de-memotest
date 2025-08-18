@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Accesibilidad para Dislexia</title>
+    <!-- Importar fuente OpenDyslexic -->
+    <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome para el ícono de hamburguesa -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Intro.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+
+<!-- Intro.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
+    <style>
+        body, html {
+            font-family: 'OpenDyslexic', Arial, sans-serif;
+        }
+        .controls-panel {
+            background: linear-gradient(145deg, #ffffff, #f8fbff);
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid #e3f2fd;
+            box-shadow: 0 10px 30px rgba(33, 150, 243, 0.1);
+            overflow-y: auto;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+        @media (min-width: 992px) {
+            .controls-panel {
+                padding: 25px;
+                max-width: 350px;
+            }
+        }
+        .control-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.08);
+            border: 1px solid #e3f2fd;
+            transition: all 0.3s ease;
+        }
+        .control-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
+        }
+        .control-group h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 3px solid #2196f3;
+            padding-bottom: 8px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1976d2;
+        }
+        .control-group input[type="range"], .control-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e3f2fd;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+        .control-group input[type="range"] {
+            padding: 0;
+            margin-bottom: 8px;
+        }
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+            background: white;
+        }
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        @media (min-width: 576px) {
+            .color-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
+        }
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .color-option.selected {
+            border-color: #2196f3;
+            box-shadow: 0 0 0 4px #90caf9;
+        }
+        .btn {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+            width: 100%;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(33, 150, 243, 0.4);
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        }
+        .btn:disabled {
+            background: linear-gradient(135deg, #b0bec5 0%, #90a4ae 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        /* MODO OSCURO para el menú de personalización */
+        body.dark-mode .controls-panel,
+        html.dark-mode .controls-panel {
+            background: #23272f;
+            border-color: #222b38;
+            box-shadow: 0 10px 30px rgba(33, 150, 243, 0.05);
+        }
+        body.dark-mode .control-group,
+        html.dark-mode .control-group {
+            background: #2e323a;
+            border-color: #222b38;
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.04);
+        }
+        body.dark-mode .control-group h3,
+        html.dark-mode .control-group h3 {
+            color: #90caf9;
+            border-bottom: 3px solid #2196f3;
+        }
+        body.dark-mode .control-group label,
+        html.dark-mode .control-group label {
+            color: #90caf9;
+        }
+        body.dark-mode .control-group input[type="range"],
+        body.dark-mode .control-group select,
+        html.dark-mode .control-group input[type="range"],
+        html.dark-mode .control-group select {
+            background: #23272f;
+            color: #e3f2fd;
+            border-color: #222b38;
+        }
+        body.dark-mode .control-group input[type="range"]::-webkit-slider-thumb,
+        html.dark-mode .control-group input[type="range"]::-webkit-slider-thumb {
+            background: #2196f3;
+        }
+        body.dark-mode .color-option,
+        html.dark-mode .color-option {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-color: #23272f;
+        }
+        body.dark-mode .color-option.selected,
+        html.dark-mode .color-option.selected {
+            border-color: #90caf9;
+            box-shadow: 0 0 0 4px #1565c0;
+        }
+        body.dark-mode .btn,
+        html.dark-mode .btn {
+            background: linear-gradient(135deg, #1565c0 0%, #283e5e 100%);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.12);
+        }
+        body.dark-mode .btn:hover,
+        html.dark-mode .btn:hover {
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        }
+    </style>
+</head>
+<body>
+
+
+
+
+<button id="customMenuToggle" class="custom-menu-toggle" aria-label="Abrir menú de personalización">
+  <span class="bar"></span>
+  <span class="bar"></span>
+  <span class="bar"></span>
+</button>
+
+
+    <div class="toggle-container-fixed">
+        <!-- Selector de modo para daltónicos -->
+        <div class="colorblind-selector">
+            <select id="colorblindMode" aria-label="Modo para daltónicos">
+                <option value="normal">Original</option>
+                <option value="protanopia">Daltonismo Rojo-Verde</option>
+                <option value="tritanopia">Tritanopia</option>
+            </select>
+        </div>
+
+        <!-- Switch de modo oscuro -->
+        <div class="toggle-darkmode-fixed">
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <div class="slider">
+                    <div class="star star_1"></div>
+                    <div class="star star_2"></div>
+                    <div class="star star_3"></div>
+                    <svg class="cloud" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M382.7 380.1c18.2 0 33.7-11.3 40.1-27.3 7.7-19.2 0.6-41-17.2-53.5 
+                            2.1-10.3 3.1-21 3.1-31.8 0-79.1-61.2-145.9-143.5-152.3C242 80.2 
+                            196.9 66 145.6 66 83.5 66 31.9 101.7 9.7 152.3c-8.2 18.5-12.9 39-12.9 
+                            60.7 0 59.3 40.2 112.3 100.3 133.5 0.1 0 0.1 0 0.2 0C122.7 367.8 
+                            150.6 384 182.3 384h200.4" fill="#fff" />
+                    </svg>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- BARRA LATERAL - ahora a la izquierda y con altura completa -->
+    <div class="sidebar controls-panel" id="sidebar">
+    <div class="sidebar-title">Personalización</div> 
+        <button id="closeSidebarBtn" class="close-sidebar-btn" aria-label="Cerrar menú de personalización">
+            <span class="close-icon"></span>
+        </button>
+        <div class="control-group">
+            <h3>📝 Tamaño de Texto</h3>
+            <label for="fontSizeSlider">Tamaño (px):</label>
+            <input type="range" id="fontSizeSlider" min="12" max="72" value="18">
+            <span id="fontSizeValue">18px</span>
+        </div>
+        <div class="control-group">
+            <h3>🎨 Color de Texto</h3>
+            <div class="color-grid" id="textColorGrid">
+                <div class="color-option selected" style="background-color: #000000" data-color="#000000"></div>
+                <div class="color-option" style="background-color: #333333" data-color="#333333"></div>
+                <div class="color-option" style="background-color: #666666" data-color="#666666"></div>
+                <div class="color-option" style="background-color: #999999" data-color="#999999"></div>
+                <div class="color-option" style="background-color: #e74c3c" data-color="#e74c3c"></div>
+                <div class="color-option" style="background-color: #3498db" data-color="#3498db"></div>
+                <div class="color-option" style="background-color: #2ecc71" data-color="#2ecc71"></div>
+                <div class="color-option" style="background-color: #f39c12" data-color="#f39c12"></div>
+                <div class="color-option" style="background-color: #9b59b6" data-color="#9b59b6"></div>
+                <div class="color-option" style="background-color: #1abc9c" data-color="#1abc9c"></div>
+                <div class="color-option" style="background-color: #34495e" data-color="#34495e"></div>
+                <div class="color-option" style="background-color: #e67e22" data-color="#e67e22"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <h3>🎨 Color de Fondo</h3>
+            <div class="color-grid" id="bgColorGrid">
+                <div class="color-option selected" style="background-color: #ffffff" data-color="#ffffff"></div>
+                <div class="color-option" style="background-color: #f8f9fa" data-color="#f8f9fa"></div>
+                <div class="color-option" style="background-color: #e9ecef" data-color="#e9ecef"></div>
+                <div class="color-option" style="background-color: #dee2e6" data-color="#dee2e6"></div>
+                <div class="color-option" style="background-color: #fff3cd" data-color="#fff3cd"></div>
+                <div class="color-option" style="background-color: #d4edda" data-color="#d4edda"></div>
+                <div class="color-option" style="background-color: #cce5ff" data-color="#cce5ff"></div>
+                <div class="color-option" style="background-color: #f8d7da" data-color="#f8d7da"></div>
+                <div class="color-option" style="background-color: #e2e3e5" data-color="#e2e3e5"></div>
+                <div class="color-option" style="background-color: #ffeaa7" data-color="#ffeaa7"></div>
+                <div class="color-option" style="background-color: #fab1a0" data-color="#fab1a0"></div>
+                <div class="color-option" style="background-color: #fd79a8" data-color="#fd79a8"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <h3>🔤 Fuente</h3>
+            <label for="fontFamily">Tipo de letra:</label>
+            <select id="fontFamily">
+                <option value="OpenDyslexic, sans-serif">OpenDyslexic</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Courier New', monospace">Courier New</option>
+                <option value="Helvetica, sans-serif">Helvetica</option>
+                <option value="Impact, sans-serif">Impact</option>
+            </select>
+        </div>
+        <button class="btn" onclick="togglePreview()">👁️ Ver Vista Previa</button>
+        <div id="previewContainer" style="display: none;">
+            <h4>Vista previa:</h4>
+            <div id="preview" class="preview-container">
+                Vista previa del contenido con los estilos personalizados.
+            </div>
+        </div>
+        <button class="btn" onclick="applyStyles()">✔️ Aplicar Estilos</button>
+        <button class="btn" onclick="resetStyles()">Restablecer Estilo</button>
+    </div>
+    
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="content-wrapper">
+        <header>
+
+            <a href="index.html"><h1>OpenDislex</h1></a>
+        </header>
+        
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <div class="slider">
+                    <div class="star star_1"></div>
+                    <div class="star star_2"></div>
+                    <div class="star star_3"></div>
+                    <svg class="cloud" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M382.7 380.1c18.2 0 33.7-11.3 40.1-27.3 7.7-19.2 0.6-41-17.2-53.5 
+                            2.1-10.3 3.1-21 3.1-31.8 0-79.1-61.2-145.9-143.5-152.3C242 80.2 
+                            196.9 66 145.6 66 83.5 66 31.9 101.7 9.7 152.3c-8.2 18.5-12.9 39-12.9 
+                            60.7 0 59.3 40.2 112.3 100.3 133.5 0.1 0 0.1 0 0.2 0C122.7 367.8 
+                            150.6 384 182.3 384h200.4" fill="#fff" />
+                    </svg>
+                </div>
+            </label>
+        </div>
+        
+        <div class="main-container">
+            <div>
+                <p class="url_css">Ingresa un enlace y aplicaremos un formato accesible:</p>
+                <div class="input-container">
+                    <div class="input-group">
+                        <input type="text" id="url" placeholder="Ingresa el enlace o pégalo aquí">
+                    </div>
+                    <div class="button-group">
+                        <button id="pasteButton">📋 Pegar Link</button>
+                        <button onclick="fetchContent()">🔍 Cargar Contenido</button>
+                    </div>
+                </div>
+                
+              
+                
+                <!-- Indicador de carga -->
+                <div id="loadingSpinner" class="loading-spinner"></div>
+                
+                <!-- CONTENIDO CARGADO -->
+                <div id="content" class="content"></div>
+                
+                
+                <!-- BOTONES DE CONTROL DE LECTURA -->
+                <div id="lecturaControles" style="display: none;">
+                    <button onclick="iniciarLectura()">▶️ Iniciar</button>
+                    <button onclick="pausarLectura()">⏸️ Pausar/Reanudar</button>
+                    <button onclick="detenerLectura()">⏹️ Detener</button>
+                    <div class="velocidad-container">
+                        <label for="velocidadLectura">Velocidad:</label>
+                        <select id="velocidadLectura" class="velocidad-select">
+                            <option value="0.5">0.5x</option>
+                            <option value="1" selected>1.0x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2.0x</option>
+                        </select>
+                    </div>
+                    <button id="generarPdfBtn" onclick="generarPDF()" class="pdf-button">📄 Generar PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <!-- Contenedor para alertas personalizadas -->
+    <div id="customAlert" class="custom-alert">
+        <div class="custom-alert-content">
+            <div class="custom-alert-header">
+                <span class="custom-alert-title">Mensaje</span>
+                <span class="custom-alert-close">&times;</span>
+            </div>
+            <div class="custom-alert-body">
+                <p id="customAlertMessage"></p>
+            </div>
+            <div class="custom-alert-footer">
+                <button id="customAlertBtn" class="custom-alert-button">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT PRINCIPAL + Funcionalidad de toggle para sidebar desplegable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Importar index.js primero para que setupAccessibilityEvents esté disponible -->
+    <script src="scripts/index.js"></script>
+<script>
+// ========== FUNCIONES DE ESTILOS PERSONALIZADOS ==========
+function applyStyles() {
+    const fontSize = document.getElementById('fontSizeSlider').value;
+    const fontFamily = document.getElementById('fontFamily').value;
+    const textColor = document.querySelector('#textColorGrid .color-option.selected')?.dataset.color || '#000000';
+    const bgColor = document.querySelector('#bgColorGrid .color-option.selected')?.dataset.color || '#ffffff';
+    const content = document.getElementById('content');
+    if (!content || content.innerHTML.trim() === '') {
+        showCustomAlert('No hay contenido para aplicar los estilos. Primero carga un texto.', 'Aviso');
+        return;
+    }
+    content.style.fontSize = fontSize + 'px';
+    content.style.fontFamily = fontFamily;
+    content.style.color = textColor;
+    content.style.backgroundColor = bgColor;
+    if (fontFamily.includes('OpenDyslexic')) {
+        content.style.letterSpacing = '0.12em';
+        content.style.lineHeight = '1.6';
+    } else {
+        content.style.letterSpacing = 'normal';
+        content.style.lineHeight = 'normal';
+    }
+    showCustomAlert('¡Estilos aplicados correctamente!', 'Éxito');
+    updatePreview();
+}
+
+function updatePreview() {
+    const fontSize = document.getElementById('fontSizeSlider').value;
+    const fontFamily = document.getElementById('fontFamily').value;
+    const textColor = document.querySelector('#textColorGrid .color-option.selected')?.dataset.color || '#000000';
+    const bgColor = document.querySelector('#bgColorGrid .color-option.selected')?.dataset.color || '#ffffff';
+    const preview = document.getElementById('preview');
+    if (!preview) return;
+    preview.style.fontSize = fontSize + 'px';
+    preview.style.fontFamily = fontFamily;
+    preview.style.color = textColor;
+    preview.style.backgroundColor = bgColor;
+    if (fontFamily.includes('OpenDyslexic')) {
+        preview.style.letterSpacing = '0.12em';
+        preview.style.lineHeight = '1.6';
+    } else {
+        preview.style.letterSpacing = 'normal';
+        preview.style.lineHeight = 'normal';
+    }
+}
+
+function resetStyles() {
+    document.getElementById('fontSizeSlider').value = 18;
+    document.getElementById('fontSizeValue').textContent = '18px';
+    document.getElementById('fontFamily').value = 'OpenDyslexic, sans-serif';
+    document.querySelectorAll('#textColorGrid .color-option').forEach(opt => opt.classList.remove('selected'));
+    document.querySelector('#textColorGrid .color-option[data-color="#000000"]').classList.add('selected');
+    document.querySelectorAll('#bgColorGrid .color-option').forEach(opt => opt.classList.remove('selected'));
+    document.querySelector('#bgColorGrid .color-option[data-color="#ffffff"]').classList.add('selected');
+    applyStyles();
+    updatePreview();
+}
+
+function togglePreview() {
+    const container = document.getElementById('previewContainer');
+    if (!container) return;
+    if (container.style.display === 'none' || container.style.display === '') {
+        container.style.display = 'block';
+        updatePreview();
+    } else {
+        container.style.display = 'none';
+    }
+}
+// ========== FIN FUNCIONES DE ESTILOS PERSONALIZADOS ==========
+
+// Interacción para color-grid (igual que editor de PDF)
+function setupColorSelector(gridId, property) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', function() {
+            grid.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            // Aplica el color seleccionado
+            if (property === 'color') {
+                document.documentElement.style.setProperty('--custom-text-color', this.dataset.color);
+            } else if (property === 'background') {
+                document.documentElement.style.setProperty('--custom-bg-color', this.dataset.color);
+            }
+        });
+    });
+}
+// Slider de tamaño de texto
+const fontSizeSlider = document.getElementById('fontSizeSlider');
+const fontSizeValue = document.getElementById('fontSizeValue');
+if(fontSizeSlider && fontSizeValue){
+    fontSizeSlider.addEventListener('input', function() {
+        fontSizeValue.textContent = this.value + 'px';
+        updatePreview();
+    });
+}
+// Inicializar color pickers
+setupColorSelector('textColorGrid', 'color');
+setupColorSelector('bgColorGrid', 'background');
+
+// Actualizar preview en tiempo real al cambiar selectores
+const fontFamily = document.getElementById('fontFamily');
+if(fontFamily){
+    fontFamily.addEventListener('change', updatePreview);
+}
+['textColorGrid','bgColorGrid'].forEach(gridId => {
+    const grid = document.getElementById(gridId);
+    if(grid){
+        grid.querySelectorAll('.color-option').forEach(opt => {
+            opt.addEventListener('click', updatePreview);
+        });
+    }
+});
+
+// ========== TOUR CON INTRO.JS ==========
+
+// Función para inicializar el tour
+function initTour() {
+    const intro = introJs();
+    
+    // Configurar los pasos del tour
+    intro.setOptions({
+        // Textos en español
+        nextLabel: 'Siguiente →',
+        prevLabel: '← Anterior',
+        skipLabel: 'Saltar',
+        doneLabel: 'Finalizar',
+        
+        // Configuración de estilo simple
+        tooltipClass: 'customTooltip',
+        highlightClass: 'customHighlight',
+        
+        // Configuración de comportamiento
+        showStepNumbers: true,
+        showBullets: false,
+        showProgress: true,
+        exitOnEsc: true,
+        exitOnOverlayClick: false,
+        disableInteraction: false,
+        
+        // Pasos del tour
+        steps: [
+            {
+                element: 'header h1',
+                intro: "¡Bienvenido a OpenDislex! 👋<br>Esta herramienta te ayuda a hacer más accesible cualquier contenido web para personas con dislexia.",
+                position: 'bottom'
+            },
+            {
+                element: '#url',
+                intro: "Aquí puedes ingresar cualquier enlace web que quieras convertir en un formato más accesible. 🔗",
+                position: 'bottom'
+            },
+            {
+                element: '#pasteButton',
+                intro: "Usa este botón para pegar rápidamente un enlace desde tu portapapeles. 📋",
+                position: 'top'
+            },
+            {
+                element: 'button[onclick="fetchContent()"]',
+                intro: "Haz clic aquí para cargar y procesar el contenido del enlace. ⚡",
+                position: 'top'
+            },
+            {
+                element: '#customMenuToggle',
+                intro: "Este menú te permite personalizar completamente la apariencia del texto: tamaño, colores de letra y fondo y la fuente. 🎨",
+                position: 'bottom'
+            },
+            {
+                element: '#darkModeToggle',
+                intro: "Activa el modo oscuro para reducir el cansancio visual durante la lectura nocturna. 🌙",
+                position: 'left'
+            },
+            {
+                element: '#colorblindMode',
+                intro: "Selecciona un modo especial si tienes daltonismo para mejorar la visualización de colores. 👁️",
+                position: 'left'
+            },
+            {
+                element: '#content',
+                intro: "Aquí aparecerá el contenido procesado con formato accesible. También incluye controles de lectura en voz alta. 📖",
+                position: 'top'
+            }
+        ]
+    });
+    
+    return intro;
+}
+
+// Función para iniciar el tour
+function startTour() {
+    const intro = initTour();
+    
+    // Eventos del tour
+    intro.onchange(function(targetElement) {
+        // Si estamos en el paso del menú personalizado, ábrelo temporalmente
+        if (targetElement.id === 'customMenuToggle') {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('open')) {
+                sidebar.classList.add('open');
+                document.getElementById('sidebarOverlay').style.display = 'block';
+            }
+        }
+    });
+    
+    intro.onexit(function() {
+        // Cerrar el menú si está abierto al salir del tour
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+            document.getElementById('sidebarOverlay').style.display = 'none';
+        }
+    });
+    
+    intro.oncomplete(function() {
+        showCustomAlert('¡Tour completado! Ya puedes comenzar a usar OpenDislex. 🎉', 'Éxito');
+    });
+    
+    // Iniciar el tour
+    intro.start();
+}
+
+// Función para mostrar el tour automáticamente en la primera visita
+function checkFirstVisit() {
+    const hasVisited = localStorage.getItem('openDislex_hasVisited');
+    if (!hasVisited) {
+        // Esperar un poco para que la página se cargue completamente
+        setTimeout(() => {
+            startTour();
+            localStorage.setItem('openDislex_hasVisited', 'true');
+        }, 1000);
+    }
+}
+
+// Función para agregar botón de ayuda
+function addHelpButton() {
+    // Crear botón de ayuda flotante
+    const helpButton = document.createElement('button');
+    helpButton.innerHTML = '❓';
+    helpButton.className = 'help-button';
+    helpButton.title = 'Iniciar tour de ayuda';
+    helpButton.onclick = startTour;
+    
+    // Agregar estilos al botón
+    helpButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+        color: white;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        z-index: 1000;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    // Efectos hover
+    helpButton.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.1)';
+        this.style.boxShadow = '0 6px 20px rgba(33, 150, 243, 0.4)';
+    });
+    
+    helpButton.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+        this.style.boxShadow = '0 4px 15px rgba(33, 150, 243, 0.3)';
+    });
+    
+    // Agregar al DOM
+    document.body.appendChild(helpButton);
+}
+
+// Estilos CSS para el tour (agregar al head o CSS)
+function addTourStyles() {
+    const styles = `
+        <style>
+        /* Estilos simples para intro.js */
+        .introjs-tooltip {
+            background: white !important;
+            border: 2px solid #2196f3 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 30px rgba(33, 150, 243, 0.2) !important;
+            font-family: 'OpenDyslexic', Arial, sans-serif !important;
+            max-width: 280px !important;
+            min-width: 200px !important;
+            box-sizing: border-box !important;
+        }
+        
+        .introjs-tooltip-header {
+            background: #2196f3 !important;
+            color: white !important;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 8px 12px !important;
+            font-weight: bold !important;
+            font-size: 12px !important;
+        }
+        
+        .introjs-tooltiptext {
+            padding: 12px !important;
+            font-size: 20px !important;
+            line-height: 1.4 !important;
+            color: #333 !important;
+        }
+        
+        .introjs-tooltipbuttons {
+            padding: 8px 12px !important;
+            border-top: 1px solid #eee !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            min-height: 32px !important;
+        }
+        
+        .introjs-tooltipbuttons .introjs-skipbutton {
+            flex-shrink: 0 !important;
+            margin-right: auto !important;
+        }
+        
+        /* Contenedor para botones de navegación */
+        .introjs-tooltipbuttons .introjs-prevbutton,
+        .introjs-tooltipbuttons .introjs-nextbutton {
+            flex-shrink: 0 !important;
+            margin-left: 4px !important;
+        }
+        
+        /* Crear grupo de botones de navegación */
+        .introjs-tooltipbuttons .introjs-prevbutton + .introjs-nextbutton {
+            margin-left: 8px !important;
+        }
+        
+        /* Asegurar que los botones se mantengan en línea */
+        .introjs-tooltipbuttons .introjs-button {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            display: inline-block !important;
+        }
+        
+        .introjs-button {
+            background: #2196f3 !important;
+            color: white !important;
+            border: none !important;
+            padding: 6px 12px !important;
+            border-radius: 6px !important;
+            font-size: 12px !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            margin: 2px !important;
+            min-width: 60px !important;
+            box-sizing: border-box !important;
+        }
+        
+        .introjs-button:hover {
+            background: #1976d2 !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        .introjs-skipbutton {
+            background: transparent !important;
+            color: #666 !important;
+            border: none !important;
+            padding: 6px 8px !important;
+            font-size: 11px !important;
+            min-width: 45px !important;
+            box-sizing: border-box !important;
+            text-decoration: underline !important;
+        }
+        
+        .introjs-skipbutton:hover {
+            background: transparent !important;
+            color: #2196f3 !important;
+            text-decoration: underline !important;
+        }
+        
+        .introjs-progressbar {
+            background: #e3f2fd !important;
+            border-radius: 10px !important;
+            height: 6px !important;
+        }
+        
+        .introjs-progress {
+            background: #2196f3 !important;
+            border-radius: 10px !important;
+        }
+        
+        .introjs-helperLayer {
+            background: rgba(33, 150, 243, 0.1) !important;
+            border: 2px solid #2196f3 !important;
+            border-radius: 8px !important;
+        }
+        
+        .introjs-overlay {
+            background: rgba(0, 0, 0, 0.4) !important;
+        }
+        
+        /* Responsive para pantallas muy pequeñas */
+        @media (max-width: 400px) {
+            .introjs-tooltip {
+                max-width: 250px !important;
+                min-width: 200px !important;
+            }
+            
+            .introjs-button {
+                padding: 4px 8px !important;
+                font-size: 11px !important;
+                min-width: 50px !important;
+            }
+            
+            .introjs-skipbutton {
+                padding: 4px 6px !important;
+                font-size: 10px !important;
+                min-width: 40px !important;
+            }
+            
+            .introjs-tooltipbuttons {
+                padding: 6px 8px !important;
+                min-height: 28px !important;
+            }
+            
+            .introjs-tooltipbuttons .introjs-prevbutton + .introjs-nextbutton {
+                margin-left: 6px !important;
+            }
+        }
+        
+        /* Para pantallas muy pequeñas - forzar layout horizontal */
+        @media (max-width: 350px) {
+            .introjs-tooltipbuttons {
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+            }
+            
+            .introjs-button {
+                min-width: 45px !important;
+                padding: 4px 6px !important;
+            }
+        }
+        
+        /* Modo oscuro para el tour */
+        .dark-mode .introjs-tooltip {
+            background: #2e323a !important;
+            border-color: #90caf9 !important;
+        }
+        
+        .dark-mode .introjs-tooltiptext {
+            color: #e3f2fd !important;
+        }
+        
+        .dark-mode .introjs-button {
+            background: #1565c0 !important;
+        }
+        
+        .dark-mode .introjs-button:hover {
+            background: #0d47a1 !important;
+        }
+        </style>
+    `;
+    
+    document.head.insertAdjacentHTML('beforeend', styles);
+}
+
+// Inicializar todo cuando la página esté cargada
+document.addEventListener('DOMContentLoaded', function() {
+    addTourStyles();
+    addHelpButton();
+    
+    // Verificar si es la primera visita (comentar esta línea si no quieres tour automático)
+    checkFirstVisit();
+});
+
+// ========== FIN TOUR CON INTRO.JS ==========
+</script>
+</body>
+</html>

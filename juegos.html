@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Juegos Educativos - Aprender Leyendo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta moderna y equilibrada */
+            --primary: #6366f1;
+            --primary-light: #8b5cf6;
+            --secondary: #0ea5e9;
+            --accent: #10b981;
+            --accent-warm: #f59e0b;
+            --surface: #ffffff;
+            --surface-elevated: #f8fafc;
+            --surface-secondary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-accent: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
+            --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        /* Elementos flotantes sutiles */
+        .background-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: -5%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: -3%;
+            animation-delay: 10s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            bottom: -10%;
+            left: 40%;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(15px) rotate(240deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header moderno */
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-family: inherit;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .back-btn:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .main-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: slideUp 0.8s ease 0.2s both;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: slideUp 0.8s ease 0.4s both;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        /* Grid responsive */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* Tarjetas modernas */
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 0;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            animation: cardEnter 0.6s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .game-card:nth-child(1) { animation-delay: 0.1s; }
+        .game-card:nth-child(2) { animation-delay: 0.2s; }
+        .game-card:nth-child(3) { animation-delay: 0.3s; }
+        .game-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes cardEnter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .game-card.available:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+        }
+
+        .game-card.available::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .game-card.coming-soon {
+            background: var(--surface-secondary);
+            border-color: var(--border);
+            cursor: not-allowed;
+        }
+
+        .game-card.coming-soon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--border);
+        }
+
+        /* Contenido de las tarjetas */
+        .card-content {
+            padding: 2rem;
+        }
+
+        /* Iconos equilibrados */
+        .game-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .game-card.available .game-icon {
+            background: var(--gradient-accent);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .game-card.coming-soon .game-icon {
+            background: var(--surface-elevated);
+            color: var(--text-muted);
+            border: 2px solid var(--border);
+        }
+
+        .game-card.available:hover .game-icon {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        /* Títulos y contenido */
+        .game-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .game-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Indicadores de dificultad */
+        .difficulty {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .difficulty-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .difficulty-dot.active {
+            background: var(--gradient-accent);
+        }
+
+        /* Botones modernos */
+        .play-button {
+            border: 2px solid transparent;
+            border-radius: var(--radius);
+            padding: 1rem 2rem;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card.available .play-button {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .game-card.available .play-button:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .game-card.available .play-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .game-card.available .play-button:hover::before {
+            left: 100%;
+        }
+
+        .game-card.coming-soon .play-button {
+            background: var(--surface-elevated);
+            color: var(--text-muted);
+            border-color: var(--border);
+            cursor: not-allowed;
+        }
+
+        /* Badge discreto */
+        .new-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--gradient-accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Controles de accesibilidad */
+        .accessibility-controls {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 0.75rem;
+            z-index: 10;
+        }
+
+        .control-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: var(--text-primary);
+            min-width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #colorblindMode {
+            min-width: 140px;
+            padding: 0.5rem 0.75rem;
+        }
+
+        #colorblindMode option {
+            background: var(--surface);
+            color: var(--text-primary);
+            padding: 0.5rem;
+        }
+
+        .control-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .back-btn,
+            .accessibility-controls {
+                position: static;
+                margin-bottom: 1rem;
+            }
+            
+            .header {
+                margin-top: 1rem;
+            }
+        }
+
+        /* Modo oscuro */
+        body.dark-mode {
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-secondary: #475569;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #475569;
+            --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        /* Filtros para daltonismo */
+        body.protanopia {
+            /* Daltonismo rojo-verde - usa azul y amarillo */
+            --primary: #2563eb; /* Azul intenso */
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9; /* Azul cielo */
+            --accent: #f59e0b; /* Amarillo/naranja */
+            --accent-warm: #eab308; /* Amarillo más cálido */
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #0ea5e9 100%);
+        }
+
+        body.tritanopia {
+            /* Tritanopia - dificultad con azul/amarillo - usa rojo y verde */
+            --primary: #dc2626; /* Rojo */
+            --primary-light: #ef4444;
+            --secondary: #16a34a; /* Verde */
+            --accent: #16a34a; /* Verde para contraste */
+            --accent-warm: #dc2626; /* Rojo */
+            --gradient-primary: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            --gradient-accent: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+        }
+
+        /* Patrones adicionales para mejor accesibilidad */
+        body.protanopia .difficulty-dot.active {
+            background: var(--accent);
+            position: relative;
+        }
+
+        body.protanopia .difficulty-dot.active::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        body.tritanopia .difficulty-dot.active {
+            background: var(--accent);
+            border: 2px solid var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Elementos de fondo sutiles -->
+    <div class="background-elements">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <!-- Controles de accesibilidad -->
+    <div class="accessibility-controls">
+        <select class="control-btn" id="colorblindMode" aria-label="Modo para daltónicos">
+            <option value="normal">🎨 Normal</option>
+            <option value="protanopia">🟡 Rojo-Verde</option>
+            <option value="tritanopia">🔵 Tritanopia</option>
+        </select>
+        <button class="control-btn" id="darkModeToggle" aria-label="Alternar modo oscuro">
+            🌙
+        </button>
+    </div>
+
+    <!-- Botón de volver -->
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="main-title">Juegos Educativos</h1>
+            <p class="subtitle">
+                Descubre una nueva forma de aprender jugando. Mejora tus habilidades de lectura con experiencias interactivas y divertidas.
+            </p>
+        </div>
+
+        <!-- Grid de juegos -->
+        <div class="games-grid">
+            <!-- Juego 1: Disponible -->
+            <a href="juego1.html" class="game-card available">
+                <div class="new-badge">Nuevo</div>
+                <div class="card-content">
+                    <div class="game-icon">
+                        <i class="fas fa-spell-check"></i>
+                    </div>
+                    <div class="difficulty">
+                        <div class="difficulty-dot active"></div>
+                        <div class="difficulty-dot active"></div>
+                        <div class="difficulty-dot"></div>
+                    </div>
+                    <div class="game-title">Palabra Correcta</div>
+                    <div class="game-description">
+                        Mejora tu ortografía identificando la palabra correcta entre varias opciones. Perfecto para reforzar las reglas de escritura.
+                    </div>
+                    <button class="play-button">
+                        <i class="fas fa-play"></i>
+                        Jugar Ahora
+                    </button>
+                </div>
+            </a>
+
+            <!-- Juego 2: Disponible -->
+            <a href="juego ritmo/index.html" class="game-card available">
+                <div class="new-badge">Nuevo</div>
+                <div class="card-content">
+                    <div class="game-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="difficulty">
+                        <div class="difficulty-dot active"></div>
+                        <div class="difficulty-dot active"></div>
+                        <div class="difficulty-dot"></div>
+                    </div>
+                    <div class="game-title">Juego de Ritmo</div>
+                    <div class="game-description">
+                     Este juego te va a ayudar a asosiar sonidos con cosas, en este caso instrumentos musicales.  
+                    </div>
+                    <button class="play-button">
+                        <i class="fas fa-play"></i>
+                        Jugar Ahora
+                    </button>
+                </div>
+            </a>
+
+            <!-- Juego 3: Próximamente -->
+            <div class="game-card coming-soon">
+                <div class="card-content">
+                    <div class="game-icon">
+                        <i class="fas fa-stopwatch"></i>
+                    </div>
+                    <div class="difficulty">
+                        <div class="difficulty-dot active"></div>
+                        <div class="difficulty-dot active"></div>
+                        <div class="difficulty-dot active"></div>
+                    </div>
+                    <div class="game-title">Lectura Rápida</div>
+                    <div class="game-description">
+                        Compite contra el tiempo mientras lees y comprendes textos. Ideal para mejorar la velocidad de lectura.
+                    </div>
+                    <button class="play-button">
+                        <i class="fas fa-clock"></i>
+                        Próximamente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Juego 4: Próximamente -->
+            <div class="game-card coming-soon">
+                <div class="card-content">
+                    <div class="game-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="difficulty">
+                        <div class="difficulty-dot active"></div>
+                        <div class="difficulty-dot"></div>
+                        <div class="difficulty-dot"></div>
+                    </div>
+                    <div class="game-title">Sílabas Interactivas</div>
+                    <div class="game-description">
+                        Aprende la división silábica de forma visual y divertida. Refuerza conceptos fundamentales de fonética.
+                    </div>
+                    <button class="play-button">
+                        <i class="fas fa-clock"></i>
+                        Próximamente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad de modo oscuro
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const colorblindMode = document.getElementById('colorblindMode');
+
+        // Cargar preferencias guardadas
+        const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+        const savedColorMode = localStorage.getItem('colorMode') || 'normal';
+
+        if (savedDarkMode) {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.textContent = '☀️';
+        }
+
+        if (savedColorMode !== 'normal') {
+            document.body.classList.add(savedColorMode);
+            colorblindMode.value = savedColorMode;
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkMode = document.body.classList.toggle('dark-mode');
+            darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDarkMode);
+        });
+
+        // Funcionalidad para daltonismo
+        colorblindMode.addEventListener('change', (e) => {
+            // Remover todas las clases de daltonismo
+            document.body.classList.remove('protanopia', 'tritanopia');
+            
+            // Agregar la nueva clase si no es normal
+            if (e.target.value !== 'normal') {
+                document.body.classList.add(e.target.value);
+                console.log(`Aplicando filtro: ${e.target.value}`); // Para debugging
+            }
+            
+            // Preservar modo oscuro si está activo
+            if (savedDarkMode || localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            localStorage.setItem('colorMode', e.target.value);
+        });
+
+        // Prevenir clicks en tarjetas deshabilitadas
+        document.querySelectorAll('.game-card.coming-soon').forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+            });
+        });
+
+        // Animación suave en scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.game-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

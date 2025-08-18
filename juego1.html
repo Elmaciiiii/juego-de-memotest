@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Palabra Correcta - Juego Educativo</title>
+    <!-- OpenDyslexic font -->
+    <link href="https://cdn.jsdelivr.net/npm/opendyslexic@1.0.1/css/opendyslexic.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --accent: #10b981;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-secondary: #f9fafb;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-accent: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
+            --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'OpenDyslexic', 'Comic Sans MS', 'Comic Sans', sans-serif;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 2rem;
+        }
+
+        /* Elementos flotantes sutiles */
+        .background-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: -5%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: -3%;
+            animation-delay: 10s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            bottom: -10%;
+            left: 40%;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(15px) rotate(240deg); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        .game-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .game-instructions {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .game-canvas {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+            background: var(--surface-elevated);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.8rem;
+            border-radius: var(--radius);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-family: inherit;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .back-btn:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        /* Controles de accesibilidad */
+        .accessibility-controls {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+            color: var(--text-primary);
+        }
+
+        .control-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        /* Feedback */
+        #feedback {
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 1.5rem;
+            min-height: 1.5em;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-correct {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .feedback-incorrect {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Opciones del juego */
+        .game-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem 1.8rem;
+            background: var(--surface);
+            border: 3px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 0.5rem;
+        }
+
+        .option-label:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .option-radio {
+            margin-right: 1.2rem;
+            width: 1.4rem;
+            height: 1.4rem;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .option-text {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .submit-btn {
+            margin-top: 1.5rem;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Estilo para opción seleccionada */
+        .option-label.selected {
+            background-color: rgba(59, 130, 246, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Modo oscuro */
+        body.dark-mode {
+
+            
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-secondary: #0f172a;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        /* Modo para daltónicos */
+        body.protanopia .game-container canvas {
+            filter: url('#protanopia');
+        }
+        
+        body.protanopia .game-container {
+            --primary: #3b82f6;
+            --accent: #10b981;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+        }
+
+        body.tritanopia .game-container canvas {
+            filter: url('#tritanopia');
+        }
+        
+        body.tritanopia .game-container {
+            --primary: #8b5cf6;
+            --accent: #ec4899;
+            --primary-light: #a78bfa;
+            --primary-dark: #7c3aed;
+        }
+        
+        /* Asegurar que el texto del selector sea visible en modo oscuro */
+        body.dark-mode select {
+            color: #f8fafc;
+            background-color: #1e293b;
+        }
+        
+        body.dark-mode select option {
+            color: #f8fafc;
+            background-color: #1e293b;
+        }
+        
+        /* Estilos para el selector de daltonismo */
+        #colorblindMode {
+            color: var(--text-primary);
+            background-color: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        #colorblindMode:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+        
+        #colorblindMode option {
+            color: var(--text-primary);
+            background-color: var(--surface);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .container {
+                padding: 1.5rem;
+                margin: 0 auto;
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .game-title {
+                font-size: 1.8rem;
+                margin-bottom: 1rem;
+            }
+            
+            .game-instructions {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .game-canvas {
+                width: 100%;
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .back-btn {
+                top: 0.5rem;
+                left: 0.5rem;
+                padding: 0.5rem 0.8rem;
+                font-size: 0.85rem;
+                z-index: 100;
+            }
+            
+            .accessibility-controls {
+                top: 0.5rem;
+                right: 0.5rem;
+                flex-direction: row;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            
+            .accessibility-controls .control-btn {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .puntaje-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+                margin: 1rem 0;
+            }
+            
+            .dificultad-selector {
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .dificultad-btn {
+                width: 100%;
+                padding: 0.8rem;
+            }
+            
+            .opciones-container {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+            
+            .opcion-btn {
+                padding: 1rem 0.5rem;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .game-title {
+                font-size: 1.5rem;
+            }
+            
+            .game-instructions {
+                font-size: 0.95rem;
+            }
+            
+            .opcion-btn {
+                font-size: 1rem;
+                padding: 0.9rem 0.5rem;
+            }
+            
+            .btn {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+    
+    <!-- SVG filters for colorblind simulation -->
+    <svg height="0" width="0" style="position:absolute;">
+        <!-- Protanopia (Red-Green) filter -->
+        <filter id="protanopia" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="0.56667 0.43333 0 0 0 0.55833 0.44167 0 0 0 0 0.24167 0.75833 0 0 0 0 0 1 0" />
+        </filter>
+        
+        <!-- Tritanopia (Blue-Yellow) filter -->
+        <filter id="tritanopia" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="0.95 0.05 0 0 0 0 0.43333 0.56667 0 0 0 0.475 0.525 0 0 0 0 0 1 0" />
+        </filter>
+    </svg>
+<body>
+    <!-- Elementos de fondo sutiles -->
+    <div class="background-elements">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <!-- Controles de accesibilidad -->
+    <div class="accessibility-controls">
+        <select class="control-btn" id="colorblindMode" aria-label="Modo para daltónicos">
+            <option value="normal">🎨 Normal</option>
+            <option value="protanopia">🟡 Rojo-Verde</option>
+            <option value="tritanopia">🔵 Tritanopia</option>
+        </select>
+        <button class="control-btn" id="darkModeToggle" aria-label="Alternar modo oscuro">
+            🌙
+        </button>
+    </div>
+
+    <!-- Botón de volver -->
+    <a href="juegos.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+
+    <div class="container">
+        <div class="game-container">
+            <div class="game-header">
+                <div>
+                    <h1 class="game-title">Palabra Correcta</h1>
+                    <div class="dificultad-selector">
+                        <span>Dificultad: </span>
+                        <select id="dificultad" onchange="setDifficulty(this.value)">
+                            <option value="facil">Fácil</option>
+                            <option value="media" selected>Media</option>
+                            <option value="dificil">Difícil</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="puntajes">
+                    <div id="puntaje-actual" class="puntaje">Puntos: 0</div>
+                    <div id="mejor-puntuacion" class="puntaje puntaje-secundario">Mejor: 0</div>
+                </div>
+            </div>
+            <p class="game-instructions" id="game-instructions">Selecciona la palabra escrita correctamente.</p>
+            <div id="p5-container" class="game-canvas"></div>
+            <div id="feedback"></div>
+        </div>
+        <style>
+            .game-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            .puntaje {
+                font-size: 1.2rem;
+                font-weight: 600;
+                background: var(--primary);
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                box-shadow: var(--shadow-sm);
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                border: 2px solid rgba(255, 255, 255, 0.2);
+            }
+            
+            /* Mejorar la visibilidad del texto en modo oscuro */
+            body.dark-mode .puntaje {
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+            
+            /* Mejorar el contraste para el modo daltónico */
+            body.protanopia .puntaje,
+            body.tritanopia .puntaje {
+                background: var(--primary-dark);
+            }
+            .puntajes {
+                display: flex;
+                flex-direction: column;
+                gap: 0.8rem;
+                text-align: right;
+                align-items: flex-end;
+            }
+            .puntaje-secundario {
+                font-size: 0.9rem !important;
+                padding: 0.5rem 1rem !important;
+                background: #4a90e2 !important;  /* Azul más visible */
+                color: white !important;
+                border: none !important;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: all 0.2s ease;
+                font-weight: 500;
+            }
+            
+            /* Mantener estilo en modo claro */
+            :root:not(.dark-mode) .puntaje-secundario {
+                background: #4a90e2 !important;
+                color: white !important;
+            }
+            .dificultad-selector {
+                margin-top: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .dificultad-selector select {
+                padding: 0.3rem;
+                border-radius: 6px;
+                border: 1px solid var(--border);
+                background: var(--surface-elevated);
+                color: black;
+            }
+            .dark-mode .puntaje {
+                background: var(--primary-dark);
+                color: white;
+            }
+            .dark-mode .puntaje-secundario {
+                background: #3b82f6 !important;  /* Azul más brillante para modo oscuro */
+                color: white !important;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            }
+        </style>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script>
+    // Variables globales
+    let ronda = 0;
+    let puntos = 0;
+    let opcionesDesordenadas = [];
+    let botones = [];
+    let feedbackTimeout = null;
+    let palabras = [];
+    let puntajeTotal = 0;
+    const PUNTOS_CORRECTO = 10;
+    const PUNTOS_INCORRECTO = 2;
+
+    // Palabras y errores típicos
+    const palabrasFaciles = [
+        {correcta: "CASA", opciones: ["CASA", "CAASA", "CASSA"]},
+        {correcta: "PERRO", opciones: ["PERRO", "PERO", "PEROO"]},
+        {correcta: "GATO", opciones: ["GATO", "GATTO", "GATOO"]},
+        {correcta: "MESA", opciones: ["MESA", "MEZA", "MESAA"]},
+        {correcta: "SOL", opciones: ["SOL", "ZOL", "SOOL"]}
+    ];
+
+    const palabrasMedias = [
+        {correcta: "CAMINO", opciones: ["CAMINO", "CAMNIO", "CAMINOO"]},
+        {correcta: "PROBLEMA", opciones: ["PROBLEMA", "PORBLEMA", "PROBLMEA"]},
+        {correcta: "ESCRIBIR", opciones: ["ESCRIBIR", "ESCRIVIR", "ESRCIBIR"]},
+        {correcta: "FAMILIA", opciones: ["FAMILIA", "FAMILA", "FMAILIA"]},
+        {correcta: "AMIGO", opciones: ["AMIGO", "AMGIO", "AMIGOO"]}
+    ];
+
+    const palabrasDificiles = [
+        {correcta: "ESCUELA", opciones: ["ESCUELA", "ESCUELAA", "ESCULA"]},
+        {correcta: "VENTANA", opciones: ["VENTANA", "VENTNAA", "VENTNAA"]},
+        {correcta: "COMPUTADORA", opciones: ["COMPUTADORA", "COMPUTDORA", "COMPUTADROA"]},
+        {correcta: "LÁPIZ", opciones: ["LÁPIZ", "LAÍPZ", "LÁPIZZ"]},
+        {correcta: "BIBLIOTECA", opciones: ["BIBLIOTECA", "BILIOTECA", "BIBLIOTCA"]}
+    ];
+
+    // Configuración inicial
+    document.addEventListener('DOMContentLoaded', () => {
+        // Cargar preferencias guardadas
+        const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+        const savedColorMode = localStorage.getItem('colorMode') || 'normal';
+        const savedDifficulty = localStorage.getItem('difficulty') || 'media';
+        
+        // Inicializar variables del juego
+        puntajeTotal = 0;
+        ronda = 0;
+        puntos = 0;
+        
+        // Configurar el selector de dificultad
+        const dificultadSelect = document.getElementById('dificultad');
+        
+        // Establecer la dificultad guardada o 'media' como predeterminado
+        if (dificultadSelect) {
+            dificultadSelect.value = savedDifficulty;
+            // Cargar las palabras para la dificultad seleccionada
+            switch(savedDifficulty) {
+                case 'facil':
+                    palabras = [...palabrasFaciles];
+                    break;
+                case 'dificil':
+                    palabras = [...palabrasDificiles];
+                    break;
+                case 'media':
+                default:
+                    palabras = [...palabrasMedias];
+            }
+            // Mezclar las palabras
+            palabras = shuffle(palabras);
+            // Inicializar el juego
+            initGame();
+        }
+        
+        // Actualizar la interfaz
+        actualizarMejorPuntaje();
+        document.getElementById('puntaje-actual').textContent = 'Puntos: 0';
+
+        // Aplicar preferencias guardadas
+        if (savedDarkMode) {
+            document.body.classList.add('dark-mode');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (darkModeToggle) darkModeToggle.textContent = '☀️';
+        }
+
+        if (savedColorMode !== 'normal') {
+            document.body.classList.add(savedColorMode);
+            const colorblindMode = document.getElementById('colorblindMode');
+            if (colorblindMode) colorblindMode.value = savedColorMode;
+        }
+    });
+
+    // Inicializar el juego
+    function initGame() {
+        const container = document.getElementById('p5-container');
+        container.innerHTML = '';
+        
+        // Crear formulario de opciones
+        const form = document.createElement('form');
+        form.setAttribute('aria-label', 'Opciones de palabras');
+        form.className = 'game-options';
+        form.id = 'game-form';
+
+        // Agregar opciones al formulario
+        opcionesDesordenadas = shuffle([...palabras[ronda].opciones]);
+        opcionesDesordenadas.forEach((opcion, i) => {
+            const label = document.createElement('label');
+            label.className = 'option-label';
+            
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'opcion';
+            input.value = opcion;
+            input.className = 'option-radio';
+            input.required = true;
+            input.id = `opcion-${i}`;
+            
+            const span = document.createElement('span');
+            span.className = 'option-text';
+            span.textContent = opcion;
+            
+            label.appendChild(input);
+            label.appendChild(span);
+            form.appendChild(label);
+            
+            botones.push(input);
+        });
+
+        // Botón de confirmar
+        const button = document.createElement('button');
+        button.type = 'submit';
+        button.className = 'submit-btn';
+        button.textContent = 'Confirmar';
+        form.appendChild(button);
+
+        // Manejar envío del formulario
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const seleccionada = form.opcion.value;
+            botones.forEach(b => b.disabled = true);
+            button.disabled = true;
+            seleccionar(seleccionada);
+        };
+
+        container.appendChild(form);
+        
+        // Actualizar feedback
+        const feedback = document.getElementById('feedback');
+        feedback.textContent = '';
+        feedback.className = '';
+    }
+
+    // Función para actualizar el puntaje mostrado
+    function actualizarPuntaje() {
+        const puntajeElement = document.getElementById('puntaje-actual');
+        if (puntajeElement) {
+            puntajeElement.textContent = `Puntos: ${puntajeTotal}`;
+        }
+    }
+
+    // Función para obtener la dificultad actual
+    function getCurrentDifficulty() {
+        const dificultadSelect = document.getElementById('dificultad');
+        return dificultadSelect ? dificultadSelect.value : 'media';
+    }
+
+    // Variable para llevar el puntaje de la partida actual
+    let puntajePartidaActual = 0;
+
+    // Función para guardar el puntaje en localStorage por dificultad
+    function guardarPuntaje() {
+        const dificultad = getCurrentDifficulty();
+        const mejorPuntajeKey = `mejorPuntaje_${dificultad}`;
+        const mejorPuntaje = parseInt(localStorage.getItem(mejorPuntajeKey)) || 0;
+        
+        // Actualizar el mejor puntaje si es necesario
+        if (puntajeTotal > mejorPuntaje) {
+            localStorage.setItem(mejorPuntajeKey, puntajeTotal);
+        }
+        
+        // Actualizar la visualización del mejor puntaje
+        actualizarMejorPuntaje();
+    }
+    
+    // Función para actualizar la visualización del mejor puntaje
+    function actualizarMejorPuntaje() {
+        const dificultad = getCurrentDifficulty();
+        const mejorPuntaje = parseInt(localStorage.getItem(`mejorPuntaje_${dificultad}`)) || 0;
+        document.getElementById('mejor-puntuacion').textContent = `Mejor (${dificultad}): ${mejorPuntaje}`;
+    }
+
+    // Función para seleccionar una opción
+    function seleccionar(opcion) {
+        const feedback = document.getElementById('feedback');
+        const correcto = opcion === palabras[ronda].correcta;
+        
+        // Actualizar contador de aciertos
+        if (correcto) {
+            puntos++; // Incrementar solo si la respuesta es correcta
+        }
+        
+        // Calcular puntos
+        const puntosGanados = correcto ? PUNTOS_CORRECTO : PUNTOS_INCORRECTO;
+        puntajeTotal += puntosGanados;
+        
+        // Actualizar feedback con puntos
+        feedback.textContent = correcto ? 
+            `¡Correcto! +${PUNTOS_CORRECTO} puntos 🎉` : 
+            `Incorrecto. +${PUNTOS_INCORRECTO} puntos. La respuesta correcta es: ${palabras[ronda].correcta}`;
+            
+        feedback.className = correcto ? 'feedback-correct' : 'feedback-incorrect';
+        
+        // Actualizar puntaje mostrado
+        actualizarPuntaje();
+        
+        // Deshabilitar todos los botones
+        botones.forEach(btn => {
+            btn.disabled = true;
+            const label = btn.closest('label');
+            if (btn.value === palabras[ronda].correcta) {
+                label.style.borderColor = 'var(--accent)';
+                label.style.background = 'rgba(16, 185, 129, 0.1)';
+            } else if (btn.checked && !correcto) {
+                label.style.borderColor = '#ef4444';
+                label.style.background = 'rgba(239, 68, 68, 0.1)';
+            }
+        });
+        
+        // Guardar puntaje actual
+        guardarPuntaje();
+        
+        // Siguiente ronda después de un retraso
+        clearTimeout(feedbackTimeout);
+        feedbackTimeout = setTimeout(siguienteRonda, 2000);
+    }
+    
+    // Función para pasar a la siguiente ronda
+    function siguienteRonda() {
+        ronda++;
+        if (ronda < palabras.length) {
+            initGame();
+        } else {
+            // Juego terminado
+            const container = document.getElementById('p5-container');
+            container.innerHTML = `
+                <div class="game-finished">
+                    <h2>¡Juego completado! </h2>
+                    <p>Puntuación: ${puntos} de ${palabras.length}</p>
+                    <button onclick="reiniciarJuego()" class="btn btn-primary" style="margin-top: 1.5rem;">
+                        <i class="fas fa-redo"></i> Jugar de nuevo
+                    </button>
+                </div>
+            `;
+        }
+    }
+    
+    
+    // Función para reiniciar el juego
+    window.reiniciarJuego = function() {
+        // Guardar el puntaje final de la partida actual
+        guardarPuntaje();
+        
+        // Reiniciar contadores para la nueva partida
+        ronda = 0;
+        puntos = 0;
+        puntajeTotal = 0;
+        
+        // Actualizar la interfaz
+        actualizarMejorPuntaje();
+        document.getElementById('puntaje-actual').textContent = 'Puntos: 0';
+        
+        // Limpiar feedback
+        const feedback = document.getElementById('feedback');
+        feedback.textContent = '';
+        feedback.className = '';
+        
+        // Reiniciar el juego
+        initGame();
+    };
+    
+    // Función para establecer la dificultad
+    function setDifficulty(difficulty) {
+        // Guardar la dificultad
+        localStorage.setItem('difficulty', difficulty);
+        
+        // Actualizar las palabras según la dificultad
+        switch(difficulty) {
+            case 'facil':
+                palabras = [...palabrasFaciles];
+                break;
+            case 'dificil':
+                palabras = [...palabrasDificiles];
+                break;
+            case 'media':
+            default:
+                palabras = [...palabrasMedias];
+        }
+        
+        // Mezclar las palabras
+        palabras = shuffle(palabras);
+        
+        // Reiniciar el juego para la nueva dificultad
+        ronda = 0;
+        puntos = 0;
+        puntajeTotal = 0;
+        document.getElementById('puntaje-actual').textContent = 'Puntos: 0';
+        
+        // Actualizar la interfaz
+        actualizarMejorPuntaje();
+        
+        // Limpiar feedback
+        const feedback = document.getElementById('feedback');
+        if (feedback) {
+            feedback.textContent = '';
+            feedback.className = '';
+        }
+        
+        // Iniciar el juego con la nueva dificultad
+        initGame();
+    }
+    
+    // Función para mezclar un array (Fisher-Yates)
+    function shuffle(array) {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+    }
+    
+    // Manejar cambios en el selector de dificultad
+    const difficultySelect = document.getElementById('difficultySelect');
+    if (difficultySelect) {
+        difficultySelect.addEventListener('change', (e) => {
+            setDifficulty(e.target.value);
+        });
+    }
+    
+    // Manejar el botón de modo oscuro
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+        // Cargar preferencia guardada de modo oscuro
+        const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (savedDarkMode) {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.textContent = '☀️';
+        } else {
+            darkModeToggle.textContent = '🌙';
+        }
+        
+        // Configurar manejador de eventos
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkMode = document.body.classList.toggle('dark-mode');
+            darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDarkMode);
+        });
+    }
+    
+    // Inicializar el modo para daltónicos
+    const colorblindMode = document.getElementById('colorblindMode');
+    if (colorblindMode) {
+        // Cargar la preferencia guardada
+        const savedColorMode = localStorage.getItem('colorblindMode') || 'normal';
+        
+        // Establecer el valor del selector
+        colorblindMode.value = savedColorMode;
+        
+        // Aplicar el modo guardado
+        if (savedColorMode !== 'normal') {
+            document.body.classList.add(savedColorMode);
+        }
+        
+        // Manejar cambios en el selector
+        colorblindMode.addEventListener('change', (e) => {
+            // Remover todas las clases de daltonismo
+            document.body.classList.remove('protanopia', 'tritanopia');
+            
+            // Agregar la nueva clase si no es normal
+            if (e.target.value !== 'normal') {
+                document.body.classList.add(e.target.value);
+            }
+            
+            // Guardar preferencia
+            localStorage.setItem('colorblindMode', e.target.value);
+        });
+    }
+    </script>
+    <script src="scripts/index.js"></script>
+    <script src="scripts/menu.js"></script>
+    <script src="scripts/accesibilidad.js"></script>
+</body>
+</html>
