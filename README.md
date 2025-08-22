@@ -72,4 +72,5 @@ DISLEXIA_PROYECTO-MAIN/
 
 
 hola 
+CUANDO COMIENCES EL JUEGO QUE DESAREZCA EL BOTON DE COMENZAR JUEGO, dps que cuando ganes el juego tep onga el tiempo en q lo hicistes. y dps por ultimo que el boton voler cuando estas en un juego te mnado a cambiar el modo de juego de memotest o que haya otro boton.
 chau
