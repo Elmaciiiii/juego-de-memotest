@@ -71,14 +71,14 @@ const gameData = {
     'colors': {
         pairs: 8,
         items: [
-            { id: 1, content: '🔴', type: 'emoji' },
-            { id: 2, content: '🔵', type: 'emoji' },
-            { id: 3, content: '🟡', type: 'emoji' },
-            { id: 4, content: '🟢', type: 'emoji' },
-            { id: 5, content: '🟠', type: 'emoji' },
-            { id: 6, content: '🟣', type: 'emoji' },
-            { id: 7, content: '⚫', type: 'emoji' },
-            { id: 8, content: '⚪', type: 'emoji' }
+            { id: 1, content: '🔴', type: 'color', rgb: '#FF0000', name: 'Rojo', protanopia: '#2D1810', tritanopia: '#FF0000' },
+            { id: 2, content: '🔵', type: 'color', rgb: '#0000FF', name: 'Azul', protanopia: '#0000FF', tritanopia: '#00FF00' },
+            { id: 3, content: '🟡', type: 'color', rgb: '#FFFF00', name: 'Amarillo', protanopia: '#DAA520', tritanopia: '#FFB6C1' },
+            { id: 4, content: '🟢', type: 'color', rgb: '#00FF00', name: 'Verde', protanopia: '#8B4513', tritanopia: '#00FF00' },
+            { id: 5, content: '🟠', type: 'color', rgb: '#FF8000', name: 'Naranja', protanopia: '#8B4513', tritanopia: '#FF8000' },
+            { id: 6, content: '🟣', type: 'color', rgb: '#8000FF', name: 'Violeta', protanopia: '#0000FF', tritanopia: '#FF0000' },
+            { id: 7, content: '⚫', type: 'color', rgb: '#000000', name: 'Negro', protanopia: '#000000', tritanopia: '#000000' },
+            { id: 8, content: '⚪', type: 'color', rgb: '#FFFFFF', name: 'Blanco', protanopia: '#FFFFFF', tritanopia: '#FFFFFF' }
         ]
     }
 };
@@ -186,6 +186,10 @@ function initGame() {
     if (savedColorMode && savedColorMode !== 'normal') {
         document.body.classList.add(savedColorMode);
         colorblindMode.value = savedColorMode;
+        // Aplicar el filtro a las cartas existentes si las hay
+        setTimeout(() => {
+            updateCardsForColorblindMode(savedColorMode);
+        }, 100);
     }
     
     colorblindMode.addEventListener('change', (e) => {
@@ -201,6 +205,9 @@ function initGame() {
         if (darkModeToggle.innerHTML.includes('<div class="sun-icon">')) {
             document.body.classList.add('dark-mode');
         }
+        
+        // Actualizar las cartas existentes con el nuevo filtro de daltonismo
+        updateCardsForColorblindMode(e.target.value);
         
         localStorage.setItem('colorMode', e.target.value);
     });
@@ -406,6 +413,28 @@ function createBoard() {
         if (currentMode === 'sound-image' && card.isMatch) {
             // Para el modo de sonido, mostrar icono de altavoz en la segunda carta
             back.innerHTML = '<i class="fas fa-volume-up" style="font-size: 2rem; color: var(--accent);"></i>';
+        } else if (currentMode === 'colors' && card.type === 'color') {
+            // Para el modo de colores, crear un elemento div con el color RGB
+            const colorElement = document.createElement('div');
+            colorElement.style.width = '60px';
+            colorElement.style.height = '60px';
+            
+            // Determinar qué color usar basado en el modo de daltonismo
+            const currentColorblindMode = document.getElementById('colorblindMode').value;
+            let colorToUse = card.rgb; // Color normal por defecto
+            
+            if (currentColorblindMode === 'protanopia' && card.protanopia) {
+                colorToUse = card.protanopia;
+            } else if (currentColorblindMode === 'tritanopia' && card.tritanopia) {
+                colorToUse = card.tritanopia;
+            }
+            
+            colorElement.style.backgroundColor = colorToUse;
+            colorElement.style.borderRadius = '50%';
+            colorElement.style.border = colorToUse === '#FFFFFF' ? '2px solid #ccc' : 'none';
+            colorElement.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+            colorElement.title = card.name;
+            back.appendChild(colorElement);
         } else {
             back.textContent = card.content;
             if (card.type === 'emoji') {
@@ -424,6 +453,16 @@ function createBoard() {
         
         // Agregar al tablero
         gameBoard.appendChild(cardElement);
+        
+        // Aplicar filtro de daltonismo si está activo
+        const currentColorblindMode = document.getElementById('colorblindMode').value;
+        if (currentColorblindMode !== 'normal') {
+            if (currentColorblindMode === 'protanopia') {
+                cardElement.style.filter = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'protanopia\'><feColorMatrix type=\'matrix\' values=\'0.567, 0.433, 0, 0, 0, 0.558, 0.442, 0, 0, 0, 0, 0.242, 0.758, 0, 0, 0, 0, 0, 1, 0\'/></filter></svg>#protanopia")';
+            } else if (currentColorblindMode === 'tritanopia') {
+                cardElement.style.filter = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'tritanopia\'><feColorMatrix type=\'matrix\' values=\'0.95, 0.05, 0, 0, 0, 0, 0.433, 0.567, 0, 0, 0, 0.475, 0.525, 0, 0, 0, 0, 0, 1, 0\'/></filter></svg>#tritanopia")';
+            }
+        }
         
         // Guardar referencia a la carta
         cards.push({
@@ -807,6 +846,51 @@ function playAgain() {
     // Las cartas estarán deshabilitadas hasta que se haga clic en "Comenzar" del sidebar
     cards.forEach(card => {
         card.element.style.pointerEvents = 'none';
+    });
+}
+
+// Función para actualizar las cartas con el filtro de daltonismo
+function updateCardsForColorblindMode(colorblindMode) {
+    // Obtener todas las cartas del tablero
+    const cardElements = document.querySelectorAll('.card');
+    
+    cardElements.forEach(cardElement => {
+        // Remover filtros previos
+        cardElement.style.filter = '';
+        
+        // Si estamos en modo de colores, actualizar los colores directamente
+        if (currentMode === 'colors') {
+            const cardIndex = parseInt(cardElement.dataset.index);
+            const cardData = cards[cardIndex];
+            if (cardData && cardData.id) {
+                // Encontrar el ítem correspondiente en gameData
+                const item = gameData.colors.items.find(item => item.id === cardData.id);
+                if (item && item.type === 'color') {
+                    // Encontrar el elemento de color dentro de la carta
+                    const colorElement = cardElement.querySelector('.card-back div');
+                    if (colorElement) {
+                        let colorToUse = item.rgb; // Color normal por defecto
+                        
+                        if (colorblindMode === 'protanopia' && item.protanopia) {
+                            colorToUse = item.protanopia;
+                        } else if (colorblindMode === 'tritanopia' && item.tritanopia) {
+                            colorToUse = item.tritanopia;
+                        }
+                        
+                        colorElement.style.backgroundColor = colorToUse;
+                        colorElement.style.border = colorToUse === '#FFFFFF' ? '2px solid #ccc' : 'none';
+                    }
+                }
+            }
+        } else {
+            // Para otros modos, aplicar el filtro SVG
+            if (colorblindMode === 'protanopia') {
+                cardElement.style.filter = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'protanopia\'><feColorMatrix type=\'matrix\' values=\'0.567, 0.433, 0, 0, 0, 0.558, 0.442, 0, 0, 0, 0, 0.242, 0.758, 0, 0, 0, 0, 0, 1, 0\'/></filter></svg>#protanopia")';
+            } else if (colorblindMode === 'tritanopia') {
+                cardElement.style.filter = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'tritanopia\'><feColorMatrix type=\'matrix\' values=\'0.95, 0.05, 0, 0, 0, 0, 0.433, 0.567, 0, 0, 0, 0.475, 0.525, 0, 0, 0, 0, 0, 1, 0\'/></filter></svg>#tritanopia")';
+            }
+        }
+        // Si es 'normal', no se aplica ningún filtro (ya se removió arriba)
     });
 }
 

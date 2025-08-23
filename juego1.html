@@ -545,8 +545,8 @@
     <div class="accessibility-controls">
         <select class="control-btn" id="colorblindMode" aria-label="Modo para daltónicos">
             <option value="normal">🎨 Normal</option>
-            <option value="protanopia">🟡 Rojo-Verde</option>
-            <option value="tritanopia">🔵 Tritanopia</option>
+                            <option value="protanopia">🟡 Protanopia</option>
+                <option value="tritanopia">🔵 Tritanopia</option>
         </select>
         <button class="control-btn" id="darkModeToggle" aria-label="Alternar modo oscuro">
             🌙
@@ -703,7 +703,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         // Cargar preferencias guardadas
         const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-        const savedColorMode = localStorage.getItem('colorMode') || 'normal';
+        const savedColorMode = localStorage.getItem('colorblindMode') || 'normal';
         const savedDifficulty = localStorage.getItem('difficulty') || 'media';
         
         // Inicializar variables del juego
