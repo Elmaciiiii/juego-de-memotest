@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Memotest - Juegos para Dislexia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="memotest.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Elementos de fondo sutiles -->
+    <div class="background-elements">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <!-- Controles de accesibilidad -->
+    <div class="accessibility-controls">
+        <select class="control-btn" id="colorblindMode" aria-label="Modo para daltónicos">
+            <option value="normal">🎨 Normal</option>
+            <option value="protanopia">🟡 Rojo-Verde</option>
+            <option value="tritanopia">🔵 Tritanopia</option>
+        </select>
+        <button class="control-btn" id="darkModeToggle" aria-label="Alternar modo oscuro">
+            🌙
+        </button>
+    </div>
+
+    <!-- Botón de volver -->
+    <a href="../juegos.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="main-title">Memotest Multisensorial</h1>
+            <p class="subtitle">
+                Juego de memoria adaptado para personas con dislexia y necesidades especiales. Desarrolla habilidades cognitivas de forma divertida e inclusiva.
+            </p>
+        </div>
+        
+        <div class="game-controls">
+            <button id="startBtn" class="btn btn-start">Comenzar Juego</button>
+        </div>
+
+        <div class="game-modes">
+            <div class="mode-card" data-mode="image-image">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="mode-icon">🖼️</div>
+                <h3 class="mode-title">Imagen con Imagen</h3>
+                <p class="mode-desc">Encuentra las parejas de imágenes iguales. Ejemplo: 🐱 ↔ 🐱</p>
+                <small>Desarrolla memoria visual y atención.</small>
+            </div>
+            
+            <div class="mode-card" data-mode="image-word">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="mode-icon">📝</div>
+                <h3 class="mode-title">Imagen con Palabra</h3>
+                <p class="mode-desc">Relaciona la imagen con su palabra correspondiente. Ejemplo: 🐶 ↔ "perro"</p>
+                <small>Refuerza vocabulario y lectura.</small>
+            </div>
+            
+            <div class="mode-card" data-mode="sound-image">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="mode-icon">🔊</div>
+                <h3 class="mode-title">Sonido con Imagen</h3>
+                <p class="mode-desc">Relaciona el sonido del animal con su imagen correcta. Ejemplo: 🔊 🐱 ↔ 🐱</p>
+                <small>Estimula memoria auditiva y asociación visual.</small>
+            </div>
+            
+            <div class="mode-card" data-mode="colors">
+                <div class="checkmark">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="mode-icon">🎨</div>
+                <h3 class="mode-title">Colores</h3>
+                <p class="mode-desc">Encuentra las parejas de colores iguales. Ejemplo: 🔴 ↔ 🔴</p>
+                <small>Desarrolla memoria visual y reconocimiento de colores.</small>
+            </div>
+        </div>
+
+        <div class="game-board-container" style="display: none;">
+            <div class="game-layout">
+                <!-- Panel lateral con información del juego -->
+                <div class="game-sidebar">
+                    <div class="sidebar-section">
+                        <h4 class="sidebar-title">Juego</h4>
+                        <div class="game-start-section">
+                            <button id="sidebarStartBtn" class="btn-sidebar btn-start">
+                                <i class="fas fa-play"></i>
+                                Comenzar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h4 class="sidebar-title">Progreso</h4>
+                        <div class="progress-info">
+                            <div class="progress-item">
+                                <span class="progress-label">Encontradas:</span>
+                                <span class="progress-value" id="score">0</span>
+                            </div>
+                            <div class="progress-item">
+                                <span class="progress-label">Total:</span>
+                                <span class="progress-value" id="total-pairs">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h4 class="sidebar-title">Tiempo</h4>
+                        <div class="timer-display">
+                            <span class="timer-value" id="timer">00:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h4 class="sidebar-title">Controles</h4>
+                        <div class="game-controls-sidebar">
+                            <button id="restartBtn" class="btn-sidebar">
+                                <i class="fas fa-redo"></i>
+                                Reiniciar
+                            </button>
+                            <button id="changeModeBtn" class="btn-sidebar">
+                                <i class="fas fa-cog"></i>
+                                Cambiar Modo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tablero principal -->
+                <div class="game-main">
+                    <div class="board-header">
+                        <h3 class="board-title">Tablero de Juego</h3>
+                        <div class="game-mode-info">
+                            <span class="mode-badge" id="currentModeBadge"></span>
+                        </div>
+                    </div>
+                    <div class="game-board" id="gameBoard">
+                        <!-- Las cartas se generarán dinámicamente con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar cambio de modo -->
+    <div class="modal-overlay" id="changeModeModal">
+        <div class="modal">
+            <div class="modal-icon">🔄</div>
+            <h3 class="modal-title">¿Cambiar de modo?</h3>
+            <p class="modal-message">
+                ¿Estás seguro de que quieres cambiar de modo de juego? 
+                Se perderá todo el progreso actual.
+            </p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" id="cancelChangeMode">Cancelar</button>
+                <button class="modal-btn modal-btn-confirm" id="confirmChangeMode">Sí, cambiar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de victoria -->
+    <div class="modal-overlay" id="victoryModal">
+        <div class="modal victory-modal">
+            <div class="modal-icon">🏆</div>
+            <h3 class="modal-title">¡Victoria!</h3>
+            <div class="victory-stats">
+                <div class="stat-item">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-label">Modo</div>
+                    <div class="stat-value" id="victoryModeName"></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-label">Tiempo</div>
+                    <div class="stat-value" id="victoryTime"></div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-confirm" id="playAgainBtn">
+                    <i class="fas fa-redo"></i>
+                    Jugar Otra Vez
+                </button>
+                <button class="modal-btn modal-btn-cancel" id="newGameBtn">
+                    <i class="fas fa-home"></i>
+                    Nuevo Juego
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="memotest.js"></script>
+</body>
+</html>
