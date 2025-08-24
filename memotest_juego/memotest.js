@@ -68,19 +68,20 @@ const gameData = {
             { id: 8, content: '🦆', sound: 'pato', type: 'emoji' }
         ]
     },
-    'colors': {
-        pairs: 8,
-        items: [
-            { id: 1, content: '🔴', type: 'color', rgb: '#FF0000', name: 'Rojo', protanopia: '#2D1810', tritanopia: '#FF0000' },
-            { id: 2, content: '🔵', type: 'color', rgb: '#0000FF', name: 'Azul', protanopia: '#0000FF', tritanopia: '#00FF00' },
-            { id: 3, content: '🟡', type: 'color', rgb: '#FFFF00', name: 'Amarillo', protanopia: '#DAA520', tritanopia: '#FFB6C1' },
-            { id: 4, content: '🟢', type: 'color', rgb: '#00FF00', name: 'Verde', protanopia: '#8B4513', tritanopia: '#00FF00' },
-            { id: 5, content: '🟠', type: 'color', rgb: '#FF8000', name: 'Naranja', protanopia: '#8B4513', tritanopia: '#FF8000' },
-            { id: 6, content: '🟣', type: 'color', rgb: '#8000FF', name: 'Violeta', protanopia: '#0000FF', tritanopia: '#FF0000' },
-            { id: 7, content: '⚫', type: 'color', rgb: '#000000', name: 'Negro', protanopia: '#000000', tritanopia: '#000000' },
-            { id: 8, content: '⚪', type: 'color', rgb: '#FFFFFF', name: 'Blanco', protanopia: '#FFFFFF', tritanopia: '#FFFFFF' }
-        ]
-    }
+'numbers': {
+    pairs: 8,
+    items: [
+        { id: 1, content: '1', type: 'number' },
+        { id: 2, content: '2', type: 'number' },
+        { id: 3, content: '3', type: 'number' },
+        { id: 4, content: '4', type: 'number' },
+        { id: 5, content: '5', type: 'number' },
+        { id: 6, content: '6', type: 'number' },
+        { id: 7, content: '7', type: 'number' },
+        { id: 8, content: '8', type: 'number' }
+    ]
+}
+
 };
 
 // Animación de pulso para la selección
@@ -353,7 +354,7 @@ function createBoard() {
     // Duplicar y mezclar las cartas
     let gameCards = [];
     
-    if (currentMode === 'image-image' || currentMode === 'colors') {
+    if (currentMode === 'image-image' || currentMode === 'numbers') {
         // Para estos modos, cada ítem se convierte en un par de cartas iguales
         modeData.items.slice(0, modeData.pairs).forEach(item => {
             gameCards.push({ ...item, isMatch: false });
@@ -741,7 +742,7 @@ function getModeName(mode) {
         'image-image': 'Imagen con Imagen',
         'image-word': 'Imagen con Palabra',
         'sound-image': 'Sonido con Imagen',
-        'colors': 'Colores'
+        'numbers': 'Números'
     };
     return names[mode] || '';
 }
